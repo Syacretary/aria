@@ -12,6 +12,7 @@ import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.Gravity
 import android.view.View
@@ -26,6 +27,9 @@ import java.util.Locale
 
 /** Local-only counter with a non-touchable island, active only after opt-in. */
 class AriaScrollAccessibilityService : AccessibilityService() {
+    private companion object {
+        const val OPEN_REMINDER_COOLDOWN_MS = 2 * 60 * 60 * 1000L
+    }
     // TikTok uses different application IDs in different regions/build tracks.
     private val supportedPackages = setOf(
         "com.instagram.android",
@@ -64,12 +68,13 @@ class AriaScrollAccessibilityService : AccessibilityService() {
     private val lastPagerIndex = mutableMapOf<String, Int>()
     private val shownMilestones = mutableMapOf<String, MutableSet<Int>>()
     private val reminderUntil = mutableMapOf<String, Long>()
+    private var islandReminderReset: Runnable? = null
     private var windowManager: WindowManager? = null
     private var island: View? = null
     private var islandText: TextView? = null
     private var intervention: View? = null
     private var interventionDismissButton: TextView? = null
-    private var pauseCountdownSeconds = 15
+    private var interventionDeadlineElapsed = 0L
     private var openReminderMode = false
     private var foregroundPackage: String? = null
     private var blockRedirectAt = 0L
@@ -77,14 +82,28 @@ class AriaScrollAccessibilityService : AccessibilityService() {
     private val pauseTicker = object : Runnable {
         override fun run() {
             val button = interventionDismissButton ?: return
-            pauseCountdownSeconds -= 1
-            if (pauseCountdownSeconds <= 0) {
+            val view = intervention
+            if (view == null || !view.isAttachedToWindow) {
+                intervention = null
+                interventionDismissButton = null
+                interventionDeadlineElapsed = 0L
+                openReminderMode = false
+                return
+            }
+            val remainingMs = interventionDeadlineElapsed - SystemClock.elapsedRealtime()
+            if (remainingMs <= 0L) {
                 button.isEnabled = true
                 button.text = if (openReminderMode) "Lanjutkan" else "Tutup jeda"
                 return
             }
-            button.text = if (openReminderMode) "Lanjutkan dalam ${pauseCountdownSeconds} dtk" else "Tutup jeda dalam ${pauseCountdownSeconds} dtk"
-            handler.postDelayed(this, 1_000L)
+            val remainingSeconds = ((remainingMs + 999L) / 1_000L).toInt()
+            button.isEnabled = false
+            button.text = if (openReminderMode) {
+                "Lanjutkan dalam ${remainingSeconds} dtk"
+            } else {
+                "Tutup jeda dalam ${remainingSeconds} dtk"
+            }
+            handler.postDelayed(this, minOf(250L, remainingMs))
         }
     }
     private val interventionTimeout = Runnable { removeIntervention() }
@@ -108,13 +127,17 @@ class AriaScrollAccessibilityService : AccessibilityService() {
                     }
                     return
                 }
-                if (transientSystemPackages.contains(packageName)) return
+                if (transientSystemPackages.contains(packageName)) {
+                    removeIntervention()
+                    return
+                }
                 val previous = foregroundPackage
                 trackQuickSocialReturn(previous, packageName)
                 if (previous != packageName && previous != null && supportedPackages.contains(previous)) {
                     sessionCounts.remove(previous)
                     shownMilestones.remove(previous)
                     reminderUntil.remove(previous)
+                    clearIslandReminderReset()
                     lastScrollY.remove(previous)
                     lastPagerIndex.remove(previous)
                 }
@@ -124,6 +147,7 @@ class AriaScrollAccessibilityService : AccessibilityService() {
                         sessionCounts[packageName] = 0
                         shownMilestones.remove(packageName)
                         reminderUntil.remove(packageName)
+                        clearIslandReminderReset()
                     }
                     showIsland(packageName)
                 } else {
@@ -208,11 +232,7 @@ class AriaScrollAccessibilityService : AccessibilityService() {
             removeIntervention()
             return
         }
-        val usage = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-        val start = java.util.Calendar.getInstance().apply { set(java.util.Calendar.HOUR_OF_DAY, 0); set(java.util.Calendar.MINUTE, 0); set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0) }.timeInMillis
-        val used = usage.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, start, System.currentTimeMillis())
-            .firstOrNull { it.packageName == packageName }?.totalTimeInForeground ?: 0L
-        if (used < limit.quotaMinutes * 60_000L) {
+        if (!hasReachedLimit(packageName, limit)) {
             removeIntervention()
             return
         }
@@ -227,6 +247,14 @@ class AriaScrollAccessibilityService : AccessibilityService() {
                 redirectHomeForLimit(packageName, limit.quotaMinutes)
             }
         }
+    }
+
+    private fun hasReachedLimit(packageName: String, limit: Limit): Boolean {
+        val usage = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val start = java.util.Calendar.getInstance().apply { set(java.util.Calendar.HOUR_OF_DAY, 0); set(java.util.Calendar.MINUTE, 0); set(java.util.Calendar.SECOND, 0); set(java.util.Calendar.MILLISECOND, 0) }.timeInMillis
+        val used = usage.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, start, System.currentTimeMillis())
+            .firstOrNull { it.packageName == packageName }?.totalTimeInForeground ?: 0L
+        return used >= limit.quotaMinutes * 60_000L
     }
 
     private fun notifyLimit(packageName: String, minutes: Int) {
@@ -247,6 +275,7 @@ class AriaScrollAccessibilityService : AccessibilityService() {
         val delivery = getSharedPreferences("aria_limit_actions", MODE_PRIVATE)
         val shownKey = "pause:$packageName:${today()}:$quotaMinutes"
         if (delivery.getBoolean(shownKey, false)) return
+        if (intervention != null && openReminderMode) removeIntervention()
         if (showIntervention(packageName, quotaMinutes)) {
             delivery.edit().putBoolean(shownKey, true).apply()
         }
@@ -335,12 +364,12 @@ class AriaScrollAccessibilityService : AccessibilityService() {
             windowManager?.addView(card, params)
             intervention = card
             interventionDismissButton = dismiss
-            pauseCountdownSeconds = 15
+            interventionDeadlineElapsed = SystemClock.elapsedRealtime() + 15_000L
             openReminderMode = false
             handler.removeCallbacks(pauseTicker)
             handler.removeCallbacks(interventionTimeout)
-            handler.postDelayed(pauseTicker, 1_000L)
-            handler.postDelayed(interventionTimeout, 60_000L)
+            handler.post(pauseTicker)
+            handler.postDelayed(interventionTimeout, 45_000L)
             true
         } catch (_: Exception) {
             removeIntervention()
@@ -350,6 +379,15 @@ class AriaScrollAccessibilityService : AccessibilityService() {
 
     private fun showOpenReminder(packageName: String) {
         if (!Settings.canDrawOverlays(this) || intervention != null) return
+        val limit = limitFor(packageName)
+        if (limit?.enabled == true && hasReachedLimit(packageName, limit)) return
+
+        val delivery = getSharedPreferences("aria_limit_actions", MODE_PRIVATE)
+        val cooldownKey = "open-reminder:$packageName"
+        val now = System.currentTimeMillis()
+        val lastShownAt = delivery.getLong(cooldownKey, 0L)
+        if (lastShownAt > 0L && now < lastShownAt + OPEN_REMINDER_COOLDOWN_MS) return
+
         val density = resources.displayMetrics.density
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -415,10 +453,12 @@ class AriaScrollAccessibilityService : AccessibilityService() {
             windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
             windowManager?.addView(card, params)
             intervention = card; interventionDismissButton = dismiss
-            pauseCountdownSeconds = 8; openReminderMode = true
+            interventionDeadlineElapsed = SystemClock.elapsedRealtime() + 8_000L
+            openReminderMode = true
             handler.removeCallbacks(pauseTicker); handler.removeCallbacks(interventionTimeout)
-            handler.postDelayed(pauseTicker, 1_000L)
-            handler.postDelayed(interventionTimeout, 45_000L)
+            handler.post(pauseTicker)
+            handler.postDelayed(interventionTimeout, 30_000L)
+            delivery.edit().putLong(cooldownKey, now).apply()
         } catch (_: Exception) { removeIntervention() }
     }
 
@@ -439,10 +479,14 @@ class AriaScrollAccessibilityService : AccessibilityService() {
     private fun removeIntervention() {
         handler.removeCallbacks(pauseTicker)
         handler.removeCallbacks(interventionTimeout)
-        intervention?.let { try { windowManager?.removeViewImmediate(it) } catch (_: IllegalArgumentException) {} }
+        val view = intervention
         intervention = null
         interventionDismissButton = null
+        interventionDeadlineElapsed = 0L
         openReminderMode = false
+        if (view != null && view.isAttachedToWindow) {
+            try { windowManager?.removeViewImmediate(view) } catch (_: Exception) { }
+        }
     }
 
     /**
@@ -506,7 +550,7 @@ class AriaScrollAccessibilityService : AccessibilityService() {
     private fun showIsland(packageName: String) {
         if (!Settings.canDrawOverlays(this)) return
         ensureIsland()
-        if (System.currentTimeMillis() < (reminderUntil[packageName] ?: 0L)) return
+        if (SystemClock.elapsedRealtime() < (reminderUntil[packageName] ?: 0L)) return
         islandText?.text = "${sessionCounts[packageName] ?: 0}x"
         islandText?.setTextColor(Color.rgb(250, 248, 244))
         island?.visibility = View.VISIBLE
@@ -526,8 +570,13 @@ class AriaScrollAccessibilityService : AccessibilityService() {
         val daySeed = today().hashCode() xor packageName.hashCode() xor milestone
         islandText?.text = messages[kotlin.math.abs(daySeed % messages.size)]
         islandText?.setTextColor(Color.rgb(225, 203, 156))
-        reminderUntil[packageName] = System.currentTimeMillis() + 8_000L
-        handler.postDelayed({ if (foregroundPackage == packageName) showIsland(packageName) }, 8_000L)
+        reminderUntil[packageName] = SystemClock.elapsedRealtime() + 8_000L
+        clearIslandReminderReset()
+        islandReminderReset = Runnable {
+            reminderUntil.remove(packageName)
+            if (foregroundPackage == packageName) showIsland(packageName)
+            islandReminderReset = null
+        }.also { handler.postDelayed(it, 8_000L) }
     }
 
     private fun ensureIsland() {
@@ -561,12 +610,33 @@ class AriaScrollAccessibilityService : AccessibilityService() {
 
     private fun removeIsland() {
         val view = island ?: return
-        try { windowManager?.removeViewImmediate(view) } catch (_: IllegalArgumentException) { }
-        island = null; islandText = null; windowManager = null
+        island = null
+        islandText = null
+        if (view.isAttachedToWindow) {
+            try { windowManager?.removeViewImmediate(view) } catch (_: Exception) { }
+        }
     }
 
-    override fun onInterrupt() = Unit
-    override fun onDestroy() { handler.removeCallbacks(limitPoll); removeIsland(); removeIntervention(); super.onDestroy() }
+    private fun clearIslandReminderReset() {
+        islandReminderReset?.let(handler::removeCallbacks)
+        islandReminderReset = null
+    }
+
+    override fun onInterrupt() {
+        handler.removeCallbacks(limitPoll)
+        clearIslandReminderReset()
+        removeIsland()
+        removeIntervention()
+    }
+
+    override fun onDestroy() {
+        handler.removeCallbacks(limitPoll)
+        clearIslandReminderReset()
+        removeIsland()
+        removeIntervention()
+        windowManager = null
+        super.onDestroy()
+    }
     private fun appName(packageName: String) = when (packageName) {
         "com.instagram.android" -> "Instagram"
         "com.google.android.youtube" -> "YouTube"
