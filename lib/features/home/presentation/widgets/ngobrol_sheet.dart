@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/motion/aria_motion.dart';
 import '../../../../core/motion/aria_sheet.dart';
 import '../../../../core/motion/aria_tap.dart';
+import '../../../../core/presentation/aria_markdown_text.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/aria_semantic_colors.dart';
@@ -96,6 +97,9 @@ class _NgobrolSheetState extends ConsumerState<NgobrolSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final availableHeight =
+        MediaQuery.sizeOf(context).height -
+        MediaQuery.viewInsetsOf(context).bottom;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -108,6 +112,8 @@ class _NgobrolSheetState extends ConsumerState<NgobrolSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const _CompanionHeader(),
+          const SizedBox(height: AppSpacing.md),
           Text('Ngobrol dengan ARIA', style: theme.textTheme.titleLarge),
           const SizedBox(height: AppSpacing.xs),
           Text(
@@ -119,7 +125,10 @@ class _NgobrolSheetState extends ConsumerState<NgobrolSheet> {
           const SizedBox(height: AppSpacing.lg),
           ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(context).height * 0.42,
+              // Keep the composer reachable when the keyboard is visible.
+              maxHeight: (availableHeight * 0.42)
+                  .clamp(150.0, 320.0)
+                  .toDouble(),
             ),
             child: ListView.separated(
               controller: _scrollController,
@@ -162,12 +171,15 @@ class _Composer extends StatelessWidget {
         Expanded(
           child: TextField(
             controller: controller,
+            autocorrect: true,
+            enableSuggestions: true,
             minLines: 1,
             maxLines: 3,
             textInputAction: TextInputAction.send,
             onSubmitted: (_) => onSend(),
             decoration: InputDecoration(
               hintText: 'Tulis pesan…',
+              labelText: 'Pesan untuk ARIA',
               filled: true,
               fillColor: theme.colorScheme.surfaceContainerHigh,
               contentPadding: const EdgeInsets.symmetric(
@@ -210,6 +222,48 @@ class _Composer extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Small, friendly identity moment inspired by the reference conversation
+/// screen. It makes the companion feel present without adding a heavy image
+/// dependency or distracting from the actual chat.
+class _CompanionHeader extends StatelessWidget {
+  const _CompanionHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.ariaColors;
+    final theme = Theme.of(context);
+
+    return Semantics(
+      label: 'ARIA, pendamping digital',
+      image: true,
+      child: Center(
+        child: Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFFFFD77A).withValues(alpha: 0.72),
+                colors.companion.withValues(alpha: 0.18),
+                const Color(0xFFC5B8ED).withValues(alpha: 0.5),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: colors.companionBorder),
+          ),
+          child: Icon(
+            Icons.sentiment_satisfied_alt_rounded,
+            color: theme.colorScheme.onSurface,
+            size: 31,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -267,13 +321,19 @@ class _Bubble extends StatelessWidget {
                 ),
               ),
             ),
-            child: Text(
-              turn.text,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: textColor,
-                height: 1.45,
-              ),
-            ),
+            child: turn.author == _Author.user
+                ? Text(
+                    turn.text,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: textColor,
+                      height: 1.45,
+                    ),
+                  )
+                : AriaMarkdownText(
+                    turn.text,
+                    style: theme.textTheme.bodyMedium ?? const TextStyle(),
+                    color: textColor,
+                  ),
           ),
         ),
       ],

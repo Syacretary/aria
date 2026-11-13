@@ -1,20 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 
 import 'core/config/app_config.dart';
 import 'core/presentation/aria_texture.dart';
 import 'core/routing/app_router.dart';
+import 'core/routing/routes.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
 
 /// Root widget. Watches the theme mode so switching light/dark in Settings
 /// re-renders the whole app instantly.
-class AriaApp extends ConsumerWidget {
+class AriaApp extends ConsumerStatefulWidget {
   const AriaApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AriaApp> createState() => _AriaAppState();
+}
+
+class _AriaAppState extends ConsumerState<AriaApp> {
+  static const _checkInChannel = MethodChannel('com.aria.aria/check_ins');
+
+  @override
+  void initState() {
+    super.initState();
+    _checkInChannel.setMethodCallHandler((call) async {
+      if (call.method == 'openRoute' && mounted) {
+        final route = call.arguments as String?;
+        ref
+            .read(routerProvider)
+            .go(
+              route == '/beranda/ngobrol'
+                  ? Routes.companionChat
+                  : Routes.spotCheck,
+            );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _checkInChannel.setMethodCallHandler(null);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ref = this.ref;
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
 

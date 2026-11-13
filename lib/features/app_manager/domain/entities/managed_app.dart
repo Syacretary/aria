@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'app_limit.dart';
 
 /// An installed app that App Manager can govern.
@@ -12,6 +14,7 @@ class ManagedApp {
     required this.sessionCount,
     this.limit,
     this.category = AppCategory.other,
+    this.iconPng,
   });
 
   final String packageName;
@@ -25,6 +28,9 @@ class ManagedApp {
   final AppLimit? limit;
 
   final AppCategory category;
+
+  /// Local launcher icon encoded as PNG, when provided by Android.
+  final Uint8List? iconPng;
 
   bool get hasLimit => limit != null;
 
@@ -75,6 +81,7 @@ class ManagedApp {
       sessionCount: sessionCount ?? this.sessionCount,
       limit: clearLimit ? null : (limit ?? this.limit),
       category: category,
+      iconPng: iconPng,
     );
   }
 

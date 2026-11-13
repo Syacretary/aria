@@ -1,12 +1,14 @@
 import '../../../../core/companion/aria_tone.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
+import '../../../../core/error/exceptions.dart';
 import '../../domain/entities/aria_message.dart';
 import '../../domain/entities/daily_summary.dart';
 import '../../domain/entities/period_stats.dart';
 import '../../domain/entities/top_app_usage.dart';
 import '../../domain/entities/trend_point.dart';
 import '../../domain/entities/win_entry.dart';
+import '../aria_llm_service.dart';
 import '../../domain/repositories/aria_companion_repository.dart';
 import '../../domain/repositories/home_repository.dart';
 import '../datasources/home_datasource.dart';
@@ -63,24 +65,61 @@ class HomeRepositoryImpl implements HomeRepository {
 /// Kept as its own class because the chat sheet only needs this narrow
 /// surface, and because it will move to a different backend first.
 class AriaCompanionRepositoryImpl implements AriaCompanionRepository {
-  const AriaCompanionRepositoryImpl(this._datasource);
+  AriaCompanionRepositoryImpl(this._datasource, this._llm);
 
   final HomeDatasource _datasource;
+  final AriaLlmService _llm;
+  final List<Map<String, String>> _conversation = [];
 
   @override
-  Future<Result<AriaMessage>> getCurrentMessage() => _guard(
-    () async =>
+  Future<Result<AriaMessage>> getCurrentMessage() => _guard(() async {
+    final local = HomeMappers.toAriaMessage(
+      await _datasource.fetchCurrentMessage(),
+    );
+    if (!_llm.enabled) return local;
+    try {
+      final text = await _llm.reply(
+        'Buat satu pesan singkat untuk beranda berdasarkan konteks pengguna. Pilih saran praktis, apresiasi, atau refleksi yang paling sesuai. Jangan mengulang pesan generik.',
+      );
+      return _withText(local, text);
+    } on Object {
+      // Keep Beranda useful if the provider is offline or misconfigured.
+      return local;
+    }
+  });
+
+  @override
+  Future<Result<AriaMessage>> reply(String userMessage) => _guard(() async {
+    if (_llm.enabled) {
+      final text = await _llm.reply(
+        userMessage,
+        conversation: List.unmodifiable(_conversation),
+      );
+      _conversation
+        ..add({'role': 'user', 'content': userMessage})
+        ..add({'role': 'assistant', 'content': text});
+      if (_conversation.length > 10) {
+        _conversation.removeRange(0, _conversation.length - 10);
+      }
+      return _withText(
         HomeMappers.toAriaMessage(await _datasource.fetchCurrentMessage()),
-  );
-
-  @override
-  Future<Result<AriaMessage>> reply(String userMessage) => _guard(
-    () async =>
-        HomeMappers.toAriaMessage(await _datasource.sendReply(userMessage)),
-  );
+        text,
+      );
+    }
+    return HomeMappers.toAriaMessage(await _datasource.sendReply(userMessage));
+  });
 
   @override
   Future<Result<void>> setTone(AriaTone tone) async => const Ok<void>(null);
+
+  AriaMessage _withText(AriaMessage message, String text) => AriaMessage(
+    id: message.id,
+    text: text,
+    createdAt: message.createdAt,
+    action: message.action,
+    actionLabel: message.actionLabel,
+    tone: message.tone,
+  );
 }
 
 /// Shared error boundary. Anything thrown below the repository becomes a
@@ -96,6 +135,9 @@ Future<Result<T>> _guard<T>(Future<T> Function() body) async {
 Failure _mapError(Object error, StackTrace stack) {
   return switch (error) {
     Failure() => error,
+    PlatformExceptionWrapper(message: final message) => PlatformFailure(
+      message,
+    ),
     StateError(message: final message) => NotFoundFailure(message),
     _ => const UnknownFailure('Terjadi kesalahan saat memuat data.'),
   };

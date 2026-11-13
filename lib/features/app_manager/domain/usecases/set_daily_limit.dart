@@ -18,6 +18,7 @@ class SetDailyLimit {
     required Duration quota,
     bool enabled = true,
     LimitEnforcement enforcement = LimitEnforcement.breathe,
+    bool remindOnOpen = false,
   }) {
     if (quota.inMinutes < _minimumMinutes) {
       return Future.value(
@@ -30,6 +31,7 @@ class SetDailyLimit {
         dailyQuota: quota,
         enabled: enabled,
         enforcement: enforcement,
+        remindOnOpen: remindOnOpen,
       ),
     );
   }

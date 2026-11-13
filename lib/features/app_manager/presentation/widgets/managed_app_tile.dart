@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/presentation/aria_card.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/aria_semantic_colors.dart';
@@ -31,51 +30,58 @@ class ManagedAppTile extends StatelessWidget {
     final theme = Theme.of(context);
     final fraction = app.fractionOfQuota;
 
-    return AriaCard(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.md,
-      ),
-      onTap: onTap,
-      child: Row(
-        children: [
-          _AppTileIcon(app: app),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  app.appName,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 1),
-                _Subtitle(app: app, fraction: fraction),
-              ],
-            ),
+    return Material(
+      color: theme.colorScheme.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
           ),
-          const SizedBox(width: AppSpacing.sm),
-          if (fraction != null)
-            AppUsageRing(fraction: fraction, overQuota: app.isOverQuota)
-          else
-            Text(
-              app.usedToday.compact,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+          child: Row(
+            children: [
+              _AppTileIcon(app: app),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      app.appName,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 1),
+                    _Subtitle(app: app, fraction: fraction),
+                  ],
+                ),
               ),
-            ),
-          if (onToggle != null) ...[
-            const SizedBox(width: AppSpacing.xs),
-            Switch.adaptive(
-              value: app.isLimitActive,
-              onChanged: app.hasLimit ? onToggle : null,
-            ),
-          ],
-        ],
+              const SizedBox(width: AppSpacing.sm),
+              if (fraction != null)
+                AppUsageRing(fraction: fraction, overQuota: app.isOverQuota)
+              else
+                Text(
+                  app.usedToday.compact,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              if (onToggle != null) ...[
+                const SizedBox(width: AppSpacing.xs),
+                Switch.adaptive(
+                  value: app.isLimitActive,
+                  onChanged: app.hasLimit ? onToggle : null,
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -153,14 +159,34 @@ class _AppTileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
+    final icon = app.iconPng;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(13),
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: icon == null
+            ? ColoredBox(
+                color: theme.colorScheme.surfaceContainerHigh,
+                child: Icon(
+                  _icon,
+                  size: 22,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              )
+            : Image.memory(
+                icon,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => ColoredBox(
+                  color: theme.colorScheme.surfaceContainerHigh,
+                  child: Icon(
+                    _icon,
+                    size: 22,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
       ),
-      child: Icon(_icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
     );
   }
 }

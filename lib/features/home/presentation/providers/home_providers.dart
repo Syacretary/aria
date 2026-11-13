@@ -5,8 +5,10 @@ import '../../../../core/di/providers.dart';
 import '../../data/datasources/home_datasource.dart';
 import '../../data/datasources/home_local_datasource.dart';
 import '../../data/datasources/home_mock_datasource.dart';
-import '../../data/datasources/home_remote_datasource.dart';
+import '../../data/datasources/usage_tracking_home_datasource.dart';
+import '../../../app_manager/data/datasources/usage_stats_android_source.dart';
 import '../../data/repositories/home_repository_impl.dart';
+import '../../data/aria_llm_service.dart';
 import '../../domain/entities/aria_message.dart';
 import '../../domain/entities/daily_summary.dart';
 import '../../domain/entities/period_stats.dart';
@@ -28,13 +30,17 @@ import '../../domain/usecases/get_weekly_trend.dart';
 
 /// Chooses the datasource implementation.
 ///
-/// This is the single switch that moves Beranda from mock to real data. When
-/// the Android usage-stats source lands, add it here — nothing else changes.
+/// This is the single switch between deterministic previews and real Android
+/// Usage Access data.
 final homeDatasourceProvider = Provider<HomeDatasource>((ref) {
   if (FeatureFlags.useMockData) {
     return HomeMockDatasource(now: ref.watch(clockProvider)());
   }
-  return HomeRemoteDatasource(ref.watch(apiClientProvider));
+  return UsageTrackingHomeDatasource(
+    usageStats: const UsageStatsAndroidSource(),
+    preferences: ref.watch(sharedPreferencesProvider),
+    clock: ref.watch(clockProvider),
+  );
 });
 
 /// Local cache, available to whichever datasource is active.
@@ -51,7 +57,10 @@ final homeRepositoryProvider = Provider<HomeRepository>(
 );
 
 final ariaCompanionRepositoryProvider = Provider<AriaCompanionRepository>(
-  (ref) => AriaCompanionRepositoryImpl(ref.watch(homeDatasourceProvider)),
+  (ref) => AriaCompanionRepositoryImpl(
+    ref.watch(homeDatasourceProvider),
+    AriaLlmService(ref.watch(sharedPreferencesProvider)),
+  ),
 );
 
 // -----------------------------------------------------------------------------

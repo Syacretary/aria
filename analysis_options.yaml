@@ -11,6 +11,9 @@ analyzer:
     - android/**
     - ios/**
     - linux/**
+    - web/**
+    - windows/**
+    - macos/**
   language:
     strict-casts: true
     strict-inference: true

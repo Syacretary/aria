@@ -25,6 +25,7 @@ class PermissionRow extends StatelessWidget {
 
   IconData get _icon => switch (permission) {
     AppPermission.usageAccess => Icons.bar_chart_rounded,
+    AppPermission.scrollDetection => Icons.swipe_up_alt_rounded,
     AppPermission.notifications => Icons.notifications_none_rounded,
     AppPermission.overlay => Icons.layers_outlined,
     AppPermission.batteryExemption => Icons.battery_saver_outlined,

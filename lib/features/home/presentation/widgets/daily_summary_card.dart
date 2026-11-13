@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/error/failure.dart';
 import '../../../../core/presentation/aria_card.dart';
 import '../../../../core/presentation/aria_loading.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/aria_semantic_colors.dart';
 import '../../../../core/utils/duration_x.dart';
@@ -42,76 +43,144 @@ class _Content extends StatelessWidget {
     final colors = context.ariaColors;
     final calmer = data.isCalmerThanYesterday;
 
-    return AriaCard(
-      eyebrow: 'Hari ini',
-      trailing: _DeltaBadge(
-        ratio: data.videoDeltaRatio,
-        // Fewer videos than yesterday is the good direction here.
-        lowerIsBetter: true,
+    return CustomPaint(
+      foregroundPainter: _GradientOutlinePainter(
+        radius: AppRadius.shell,
+        strokeWidth: 3,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text('${data.videosOpened}', style: theme.textTheme.displaySmall),
-              const SizedBox(width: AppSpacing.sm),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  'video dibuka',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    height: 1.2,
-                  ),
-                ),
-              ),
-            ],
+      child: ClipRRect(
+        borderRadius: AppRadius.shellBorder,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFFFFD36E), Color(0xFFFFFFFF), Color(0xFFC4B7EE)],
+              stops: [0, 0.58, 1],
+            ),
           ),
-          const SizedBox(height: AppSpacing.xl),
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _MiniStat(
-                  label: 'Total layar',
-                  value: data.totalScreenTime.compact,
-                ),
+              Row(
+                children: [
+                  Text('HARI INI', style: theme.textTheme.labelSmall),
+                  const Spacer(),
+                  _DeltaBadge(ratio: data.videoDeltaRatio, lowerIsBetter: true),
+                ],
               ),
-              Container(width: 1, height: 34, color: colors.hairline),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: AppSpacing.lg),
-                  child: _MiniStat(
-                    label: 'Buka sosmed',
-                    value: '${data.socialAppOpens}×',
+              const SizedBox(height: AppSpacing.xl),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    '${data.videosOpened}',
+                    style: theme.textTheme.displaySmall,
                   ),
-                ),
-              ),
-            ],
-          ),
-          if (calmer) ...[
-            const SizedBox(height: AppSpacing.xl),
-            Row(
-              children: [
-                Icon(Icons.trending_down_rounded, size: 15, color: colors.win),
-                const SizedBox(width: AppSpacing.xs),
-                Expanded(
-                  child: Text(
-                    'Lebih tenang dari kemarin. Pertahankan ritmenya.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.win,
+                  const SizedBox(width: AppSpacing.sm),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      'scroll video*',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        height: 1.2,
+                      ),
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                '*perkiraan dari aplikasi yang didukung',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Row(
+                children: [
+                  Expanded(
+                    child: _MiniStat(
+                      label: 'Total layar',
+                      value: data.totalScreenTime.compact,
+                    ),
+                  ),
+                  Container(width: 1, height: 34, color: colors.hairline),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: AppSpacing.lg),
+                      child: _MiniStat(
+                        label: 'Buka sosmed',
+                        value: '${data.socialAppOpens}×',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (calmer) ...[
+                const SizedBox(height: AppSpacing.xl),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.trending_down_rounded,
+                      size: 15,
+                      color: colors.win,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Expanded(
+                      child: Text(
+                        'Lebih tenang dari kemarin. Pertahankan ritmenya.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.win,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
+}
+
+class _GradientOutlinePainter extends CustomPainter {
+  const _GradientOutlinePainter({
+    required this.radius,
+    required this.strokeWidth,
+  });
+
+  final double radius;
+  final double strokeWidth;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFFD8A638), Color(0xFF9476C2)],
+      ).createShader(rect);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        rect.deflate(strokeWidth / 2),
+        Radius.circular(radius),
+      ),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_GradientOutlinePainter oldDelegate) =>
+      radius != oldDelegate.radius || strokeWidth != oldDelegate.strokeWidth;
 }
 
 class _MiniStat extends StatelessWidget {
@@ -202,6 +271,8 @@ class _Skeleton extends StatelessWidget {
           AriaSkeleton(width: 120, height: 40, radius: 12),
           SizedBox(height: AppSpacing.xl),
           AriaSkeletonLines(lines: 2),
+          SizedBox(height: AppSpacing.md),
+          Text('Menyiapkan ringkasan penggunaanmu…'),
         ],
       ),
     );

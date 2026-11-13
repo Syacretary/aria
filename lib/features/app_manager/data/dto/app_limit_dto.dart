@@ -18,6 +18,7 @@ abstract class AppLimitDto with _$AppLimitDto {
     @JsonKey(name: 'quota_minutes') required int quotaMinutes,
     @Default(true) bool enabled,
     @JsonKey(name: 'enforcement') @Default('breathe') String enforcement,
+    @JsonKey(name: 'remind_on_open') @Default(false) bool remindOnOpen,
     @JsonKey(name: 'active_weekdays') @Default('') String activeWeekdays,
     @JsonKey(name: 'active_from_minutes') int? activeFromMinutes,
     @JsonKey(name: 'active_until_minutes') int? activeUntilMinutes,

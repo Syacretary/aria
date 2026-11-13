@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../../domain/entities/installed_social_app.dart';
 import '../../domain/entities/usage_session.dart';
 import 'usage_stats_source.dart';
 
@@ -13,6 +14,22 @@ class UsageStatsMockSource implements UsageStatsSource {
   UsageStatsMockSource({int seed = 771}) : _random = Random(seed);
 
   final Random _random;
+
+  @override
+  Future<List<InstalledSocialApp>> installedSocialApps() async => const [
+    InstalledSocialApp(
+      packageName: 'com.zhiliaoapp.musically',
+      appName: 'TikTok',
+    ),
+    InstalledSocialApp(
+      packageName: 'com.instagram.android',
+      appName: 'Instagram',
+    ),
+    InstalledSocialApp(
+      packageName: 'com.google.android.youtube',
+      appName: 'YouTube',
+    ),
+  ];
 
   static const Map<String, int> _baseMinutes = {
     'com.zhiliaoapp.musically': 78, // TikTok — over a 60m limit
@@ -77,6 +94,9 @@ class UsageStatsMockSource implements UsageStatsSource {
       ),
     ];
   }
+
+  @override
+  Future<int> scrollCount({required DateTime day}) async => 47;
 
   @override
   Future<bool> hasUsageAccess() async => true;

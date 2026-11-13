@@ -22,10 +22,8 @@ class AppManagerRepositoryImpl implements AppManagerRepository {
   final UsageStatsSource _usageSource;
   final AppManagerLocalDatasource _local;
 
-  /// Catalogue of apps ARIA knows how to govern.
-  ///
-  /// Hard-coded for now; the real implementation reads the launcher intent list
-  /// from Android and filters out system packages.
+  /// Metadata for curated social apps; Android reports only those actually
+  /// installed, together with their launcher labels and icons.
   static const List<ManagedApp> _catalogue = [
     ManagedApp(
       packageName: 'com.zhiliaoapp.musically',
@@ -49,25 +47,53 @@ class AppManagerRepositoryImpl implements AppManagerRepository {
       category: AppCategory.video,
     ),
     ManagedApp(
-      packageName: 'com.whatsapp',
-      appName: 'WhatsApp',
+      packageName: 'com.facebook.katana',
+      appName: 'Facebook',
       usedToday: Duration.zero,
       sessionCount: 0,
-      category: AppCategory.messaging,
+      category: AppCategory.social,
     ),
     ManagedApp(
-      packageName: 'com.spotify.music',
-      appName: 'Spotify',
+      packageName: 'com.twitter.android',
+      appName: 'X',
       usedToday: Duration.zero,
       sessionCount: 0,
-      category: AppCategory.other,
+      category: AppCategory.social,
     ),
     ManagedApp(
-      packageName: 'com.google.android.apps.nbu.files',
-      appName: 'Files',
+      packageName: 'com.reddit.frontpage',
+      appName: 'Reddit',
       usedToday: Duration.zero,
       sessionCount: 0,
-      category: AppCategory.productivity,
+      category: AppCategory.social,
+    ),
+    ManagedApp(
+      packageName: 'com.snapchat.android',
+      appName: 'Snapchat',
+      usedToday: Duration.zero,
+      sessionCount: 0,
+      category: AppCategory.social,
+    ),
+    ManagedApp(
+      packageName: 'com.pinterest',
+      appName: 'Pinterest',
+      usedToday: Duration.zero,
+      sessionCount: 0,
+      category: AppCategory.social,
+    ),
+    ManagedApp(
+      packageName: 'com.instagram.barcelona',
+      appName: 'Threads',
+      usedToday: Duration.zero,
+      sessionCount: 0,
+      category: AppCategory.social,
+    ),
+    ManagedApp(
+      packageName: 'com.ss.android.ugc.trill',
+      appName: 'TikTok',
+      usedToday: Duration.zero,
+      sessionCount: 0,
+      category: AppCategory.video,
     ),
   ];
 
@@ -75,20 +101,28 @@ class AppManagerRepositoryImpl implements AppManagerRepository {
   Future<Result<List<ManagedApp>>> getManagedApps() async {
     try {
       final today = DateTime.now();
+      final installed = await _usageSource.installedSocialApps();
       final screenTime = await _usageSource.screenTimeByApp(day: today);
       final launches = await _usageSource.launchCounts(day: today);
       final limits = await _local.readLimits();
 
+      final templates = {for (final app in _catalogue) app.packageName: app};
       final apps =
-          _catalogue
-              .map((app) {
-                final limitDto = limits[app.packageName];
-                return app.copyWith(
-                  usedToday: screenTime[app.packageName] ?? Duration.zero,
-                  sessionCount: launches[app.packageName] ?? 0,
+          installed
+              .map((installedApp) {
+                final template = templates[installedApp.packageName];
+                final limitDto = limits[installedApp.packageName];
+                return ManagedApp(
+                  packageName: installedApp.packageName,
+                  appName: installedApp.appName,
+                  usedToday:
+                      screenTime[installedApp.packageName] ?? Duration.zero,
+                  sessionCount: launches[installedApp.packageName] ?? 0,
                   limit: limitDto == null
                       ? null
                       : AppManagerMappers.toAppLimit(limitDto),
+                  category: template?.category ?? AppCategory.social,
+                  iconPng: installedApp.iconPng,
                 );
               })
               .toList(growable: false)

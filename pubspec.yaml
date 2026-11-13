@@ -46,6 +46,13 @@ dev_dependencies:
   aria_lint:
     path: custom_lint/aria_lint
 
+# shared_preferences_android 2.5.x currently decodes Android values through its
+# JNI interop codec; legacy preference values can make its getAll decoder throw
+# before the app's first screen is built. Keep the compatible Pigeon channel
+# implementation until that migration handles every legacy value type.
+dependency_overrides:
+  shared_preferences_android: 2.4.28
+
 flutter:
   uses-material-design: true
 

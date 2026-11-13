@@ -1,0 +1,2 @@
+[functions.aria-chat]
+verify_jwt = true

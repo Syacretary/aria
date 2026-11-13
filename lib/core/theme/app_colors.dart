@@ -20,16 +20,16 @@ abstract final class AppColors {
 
   /// The one accent. Sage, saturation kept under 30% so it sits inside the
   /// neutrals instead of shouting over them.
-  static const Color sage = Color(0xFF4A7C6F);
+  static const Color sage = Color(0xFF9A783E);
 
   /// A lighter sage for fills and rings on dark surfaces.
-  static const Color sageSoft = Color(0xFF7FA99C);
+  static const Color sageSoft = Color(0xFFE1CB9C);
 
   /// Companion tint — ARIA's voice uses the same hue family, lighter and
   /// warmer, so the message card is distinguishable without introducing a
   /// second accent.
-  static const Color companionTintLight = Color(0xFFEDF2EF);
-  static const Color companionTintDark = Color(0xFF1E2724);
+  static const Color companionTintLight = Color(0xFFFFF8E9);
+  static const Color companionTintDark = Color(0xFF30291D);
 
   // ---------------------------------------------------------------------------
   // Warm neutrals — light
@@ -67,18 +67,18 @@ abstract final class AppColors {
   // ---------------------------------------------------------------------------
 
   /// Achievement. A muted olive-sage, not a bright "success green".
-  static const Color win = Color(0xFF5C8A5C);
-  static const Color winSurfaceLight = Color(0xFFEDF3EC);
-  static const Color winSurfaceDark = Color(0xFF1D2620);
+  static const Color win = Color(0xFF8C713D);
+  static const Color winSurfaceLight = Color(0xFFF5EBD3);
+  static const Color winSurfaceDark = Color(0xFF30291D);
 
   /// Caution. Warm ochre, desaturated.
   static const Color caution = Color(0xFFB08A47);
 
   /// Over-limit. Terracotta rather than a warning-red; reads as concern, not
   /// alarm.
-  static const Color over = Color(0xFFB0574B);
-  static const Color overSurfaceLight = Color(0xFFF7EDEA);
-  static const Color overSurfaceDark = Color(0xFF2A1E1C);
+  static const Color over = Color(0xFF95705A);
+  static const Color overSurfaceLight = Color(0xFFF1E5EF);
+  static const Color overSurfaceDark = Color(0xFF302532);
 
   /// The Material seed. Only used to generate the ColorScheme; every visible
   /// colour is specified explicitly below so nothing drifts.

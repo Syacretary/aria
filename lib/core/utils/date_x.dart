@@ -1,7 +1,58 @@
-import 'package:intl/intl.dart';
-
 /// Date helpers shared across features.
 extension DateX on DateTime {
+  static const _shortWeekdays = [
+    'Sen',
+    'Sel',
+    'Rab',
+    'Kam',
+    'Jum',
+    'Sab',
+    'Min',
+  ];
+  static const _weekdays = [
+    'Senin',
+    'Selasa',
+    'Rabu',
+    'Kamis',
+    'Jumat',
+    'Sabtu',
+    'Minggu',
+  ];
+  static const _shortMonths = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
+  ];
+  static const _months = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ];
+
+  String get _day => day.toString();
+  String get _shortMonth => _shortMonths[month - 1];
+  String get _month => _months[month - 1];
+  String get _time =>
+      '${hour.toString().padLeft(2, '0')}.${minute.toString().padLeft(2, '0')}';
+
   /// Midnight of this day, local time.
   DateTime get startOfDay => DateTime(year, month, day);
 
@@ -25,17 +76,17 @@ extension DateX on DateTime {
       startOfDay.difference(other.startOfDay).inDays;
 
   /// "Sen", "Sel", ... — for compact week labels in charts.
-  String get shortWeekdayId => DateFormat('E', 'id_ID').format(this);
+  String get shortWeekdayId => _shortWeekdays[weekday - 1];
 
   /// "3 Nov" — for chart axis and list subtitles.
-  String get shortDateId => DateFormat('d MMM', 'id_ID').format(this);
+  String get shortDateId => '$_day $_shortMonth';
 
   /// "Senin, 3 November 2026" — for page headers.
-  String get longDateId => DateFormat('EEEE, d MMMM y', 'id_ID').format(this);
+  String get longDateId => '${_weekdays[weekday - 1]}, $_day $_month $year';
 
   /// "3 Nov 2026, 14.30" — for message timestamps.
-  String get dateTimeId => DateFormat('d MMM y, HH.mm', 'id_ID').format(this);
+  String get dateTimeId => '$_day $_shortMonth $year, $_time';
 
   /// "14.30" — for compact list subtitles.
-  String get shortTimeId => DateFormat('HH.mm', 'id_ID').format(this);
+  String get shortTimeId => _time;
 }

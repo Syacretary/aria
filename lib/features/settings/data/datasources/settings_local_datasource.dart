@@ -70,6 +70,15 @@ class SettingsLocalDatasource {
       _prefs.remove(PrefKeys.quietHoursFrom),
       _prefs.remove(PrefKeys.quietHoursUntil),
       _prefs.remove(PrefKeys.maskAppNames),
+      _prefs.remove(PrefKeys.spotCheckEnabled),
+      _prefs.remove(PrefKeys.spotCheckIntervalDays),
+      _prefs.remove(PrefKeys.spotCheckHistory),
+      _prefs.remove(PrefKeys.ariaAiEnabled),
+      _prefs.remove(PrefKeys.ariaAiProactive),
+      _prefs.remove(PrefKeys.quickSocialReturns),
+      _prefs.remove(PrefKeys.intentionalSocialExits),
+      _prefs.remove(PrefKeys.completedBreathingPauses),
+      _prefs.remove(PrefKeys.achievementProgress),
     ]);
   }
 

@@ -3,8 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/app_manager/presentation/app_manager_page.dart';
+import '../../features/achievements/presentation/achievements_page.dart';
+import '../../features/check_ins/presentation/spot_check_page.dart';
+import '../../features/check_ins/presentation/spot_check_test_page.dart';
+import '../../features/home/presentation/companion_chat_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/settings/presentation/settings_page.dart';
+import '../../features/settings/presentation/aria_ai_settings_page.dart';
 import 'routes.dart';
 import 'shell_scaffold.dart';
 
@@ -50,12 +55,76 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+      GoRoute(
+        path: Routes.achievements,
+        name: Routes.achievementsSegment,
+        builder: (context, state) => const AchievementsPage(),
+      ),
+      GoRoute(
+        path: Routes.spotCheck,
+        name: 'refleksi',
+        builder: (context, state) => const SpotCheckPage(),
+      ),
+      GoRoute(
+        path: Routes.spotCheckTest,
+        name: 'refleksi-tes',
+        builder: (context, state) => const SpotCheckTestPage(),
+      ),
+      GoRoute(
+        path: Routes.settingsAriaAi,
+        name: 'pengaturan-aria-ai',
+        builder: (context, state) => const AriaAiSettingsPage(),
+      ),
+      GoRoute(
+        path: Routes.companionChat,
+        name: Routes.companionChatSegment,
+        pageBuilder: (context, state) => const CustomTransitionPage<void>(
+          child: CompanionChatPage(),
+          transitionDuration: Duration(milliseconds: 620),
+          reverseTransitionDuration: Duration(milliseconds: 520),
+          transitionsBuilder: _companionTransition,
+        ),
+      ),
     ],
     // A calm, on-brand fallback rather than a red error screen.
     errorBuilder: (context, state) =>
         _RouteNotFoundScreen(location: state.uri.toString()),
   );
 });
+
+Widget _companionTransition(
+  BuildContext context,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) return child;
+  final incoming = CurvedAnimation(
+    parent: animation,
+    curve: Curves.easeOutCubic,
+  );
+  final outgoing = CurvedAnimation(
+    parent: secondaryAnimation,
+    curve: Curves.easeInCubic,
+  );
+  return SlideTransition(
+    position: Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, 0.22),
+    ).animate(outgoing),
+    child: FadeTransition(
+      opacity: Tween<double>(begin: 1, end: 0).animate(outgoing),
+      child: FadeTransition(
+        opacity: incoming,
+        child: ScaleTransition(
+          alignment: const Alignment(0, -0.82),
+          scale: Tween<double>(begin: 0.28, end: 1).animate(incoming),
+          child: child,
+        ),
+      ),
+    ),
+  );
+}
 
 class _RouteNotFoundScreen extends StatelessWidget {
   const _RouteNotFoundScreen({required this.location});

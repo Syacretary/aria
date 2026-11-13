@@ -11,6 +11,7 @@ abstract final class AppManagerMappers {
     dailyQuota: Duration(minutes: dto.quotaMinutes),
     enabled: dto.enabled,
     enforcement: _enforcementFrom(dto.enforcement),
+    remindOnOpen: dto.remindOnOpen,
     activeWeekdays: _weekdaysFrom(dto.activeWeekdays),
     activeFrom: _timeFrom(dto.activeFromMinutes),
     activeUntil: _timeFrom(dto.activeUntilMinutes),
@@ -21,6 +22,7 @@ abstract final class AppManagerMappers {
     quotaMinutes: limit.dailyQuota.inMinutes,
     enabled: limit.enabled,
     enforcement: limit.enforcement.name,
+    remindOnOpen: limit.remindOnOpen,
     activeWeekdays: _weekdaysTo(limit.activeWeekdays),
     activeFromMinutes: _minutesFrom(limit.activeFrom),
     activeUntilMinutes: _minutesFrom(limit.activeUntil),
@@ -49,7 +51,7 @@ abstract final class AppManagerMappers {
   static LimitEnforcement _enforcementFrom(String raw) => switch (raw) {
     'warn' => LimitEnforcement.warn,
     'block' => LimitEnforcement.block,
-    'track_only' => LimitEnforcement.trackOnly,
+    'track_only' || 'trackOnly' => LimitEnforcement.trackOnly,
     _ => LimitEnforcement.breathe,
   };
 

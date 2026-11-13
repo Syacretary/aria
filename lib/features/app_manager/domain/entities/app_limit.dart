@@ -11,6 +11,7 @@ class AppLimit {
     required this.dailyQuota,
     this.enabled = true,
     this.enforcement = LimitEnforcement.breathe,
+    this.remindOnOpen = false,
     this.activeWeekdays = const {},
     this.activeFrom,
     this.activeUntil,
@@ -25,6 +26,9 @@ class AppLimit {
   final bool enabled;
 
   final LimitEnforcement enforcement;
+
+  /// Shows a short, dismissible reflection when the app is opened.
+  final bool remindOnOpen;
 
   /// Days the limit applies to. Empty = every day.
   final Set<int> activeWeekdays;
@@ -44,6 +48,7 @@ class AppLimit {
     Duration? dailyQuota,
     bool? enabled,
     LimitEnforcement? enforcement,
+    bool? remindOnOpen,
     Set<int>? activeWeekdays,
     DurationOfDay? activeFrom,
     DurationOfDay? activeUntil,
@@ -54,6 +59,7 @@ class AppLimit {
       dailyQuota: dailyQuota ?? this.dailyQuota,
       enabled: enabled ?? this.enabled,
       enforcement: enforcement ?? this.enforcement,
+      remindOnOpen: remindOnOpen ?? this.remindOnOpen,
       activeWeekdays: clearSchedule
           ? const {}
           : (activeWeekdays ?? this.activeWeekdays),
@@ -71,6 +77,7 @@ class AppLimit {
           dailyQuota == other.dailyQuota &&
           enabled == other.enabled &&
           enforcement == other.enforcement &&
+          remindOnOpen == other.remindOnOpen &&
           activeWeekdays == other.activeWeekdays &&
           activeFrom == other.activeFrom &&
           activeUntil == other.activeUntil;
@@ -81,6 +88,7 @@ class AppLimit {
     dailyQuota,
     enabled,
     enforcement,
+    remindOnOpen,
     activeWeekdays,
     activeFrom,
     activeUntil,

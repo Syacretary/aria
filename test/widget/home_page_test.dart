@@ -47,6 +47,7 @@ void main() {
     // The feed is a lazy ListView, so each block has to be scrolled into view
     // before it exists in the tree.
     expect(find.byType(DailySummaryCard), findsOneWidget);
+    await _scrollTo(tester, find.byType(UsagePeriodCard));
     expect(find.byType(UsagePeriodCard), findsOneWidget);
 
     await _scrollTo(tester, find.byType(AriaMessageCard));
@@ -79,7 +80,7 @@ void main() {
     expect(find.text('Ngobrol'), findsOneWidget);
   });
 
-  testWidgets('tapping Ngobrol opens the companion sheet', (tester) async {
+  testWidgets('tapping Ngobrol opens the full companion page', (tester) async {
     await tester.pumpWidget(await _home(prefs));
     await tester.pumpAndSettle();
 
@@ -87,10 +88,23 @@ void main() {
 
     await tester.tap(find.text('Ngobrol'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
 
-    expect(find.text('Ngobrol dengan ARIA'), findsOneWidget);
-    expect(find.text('Tulis pesan…'), findsOneWidget);
+    expect(find.text('Ada yang ingin kamu ceritakan?'), findsOneWidget);
+    expect(find.text('Tulis pesan untuk ARIA…'), findsOneWidget);
+    expect(find.bySemanticsLabel('ARIA, pendamping digital'), findsOneWidget);
+  });
+
+  testWidgets('chat page keeps its composer visible', (tester) async {
+    await tester.pumpWidget(await _home(prefs));
+    await tester.pumpAndSettle();
+
+    await _scrollTo(tester, find.text('Ngobrol'));
+    await tester.tap(find.text('Ngobrol'));
+    await tester.pumpAndSettle();
+
+    await tester.pumpAndSettle();
+    expect(find.byType(TextField), findsOneWidget);
   });
 
   testWidgets('the trend card renders with its target summary', (tester) async {

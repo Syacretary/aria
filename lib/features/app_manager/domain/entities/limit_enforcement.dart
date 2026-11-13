@@ -1,8 +1,7 @@
 /// What happens when an app's daily limit is reached.
 ///
-/// Iteration 1 only stores this; enforcement needs the Android usage-stats
-/// integration. Having the enum in the domain now means the UI can already
-/// offer the choice and nothing has to be restructured later.
+/// The Android accessibility service applies the selected response when the
+/// daily usage quota is reached.
 enum LimitEnforcement {
   /// ARIA sends a nudge but does not intervene.
   warn,

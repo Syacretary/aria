@@ -126,7 +126,11 @@ class AriaCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colors.shellWash,
         borderRadius: AppRadius.shellBorder,
-        border: Border.all(color: colors.hairline),
+        // Only the first, daily summary card owns a visible outline. Other
+        // cards rely on surface contrast and spacing for grouping.
+        border: eyebrow == 'Hari ini'
+            ? Border.all(color: colors.hairline)
+            : null,
         boxShadow: AppShadows.raised(theme.brightness),
       ),
       child: Padding(

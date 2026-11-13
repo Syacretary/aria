@@ -9,10 +9,10 @@ import '../theme/aria_semantic_colors.dart';
 ///
 /// Two things happen here, both from the design brief:
 ///
-/// 1. **Ambient gradient** — two very large, very soft radial washes in warm
-///    tones placed off-centre. This is what stops a full-screen background from
-///    reading as a flat fill, and it is deliberately *not* the purple/blue
-///    mesh-gradient look that makes an app read as machine-generated.
+/// 1. **Ambient gradient** — three very large, very soft radial washes in
+///    sunrise yellow, sage, and a dusty lilac. This gives ARIA the warm,
+///    optimistic atmosphere of a calm companion without turning the page into
+///    a high-contrast mesh gradient.
 /// 2. **Grain** — a sparse noise field at ~3% opacity. Pure vector surfaces
 ///    feel sterile; a hint of grain gives the screen the quality of paper.
 ///
@@ -99,26 +99,36 @@ class _AriaTextureLayerState extends State<AriaTextureLayer> {
                   ambient: isLight
                       ? const [
                           _AmbientOrb(
-                            Alignment(-0.85, -1.0),
-                            0.10,
-                            Color(0xFF4A7C6F),
+                            Alignment(-0.75, -1.05),
+                            0.13,
+                            Color(0xFFFFC95E),
                           ),
                           _AmbientOrb(
-                            Alignment(1.1, 0.35),
+                            Alignment(1.15, 0.28),
+                            0.09,
+                            Color(0xFFB9ADE8),
+                          ),
+                          _AmbientOrb(
+                            Alignment(-1.1, 0.95),
                             0.07,
-                            Color(0xFFB08A47),
+                            Color(0xFF8FBFAD),
                           ),
                         ]
                       : const [
                           _AmbientOrb(
-                            Alignment(-0.85, -1.0),
-                            0.16,
-                            Color(0xFF4A7C6F),
+                            Alignment(-0.75, -1.05),
+                            0.13,
+                            Color(0xFFD3A13F),
                           ),
                           _AmbientOrb(
-                            Alignment(1.1, 0.35),
+                            Alignment(1.15, 0.28),
+                            0.12,
+                            Color(0xFF7565A6),
+                          ),
+                          _AmbientOrb(
+                            Alignment(-1.1, 0.95),
                             0.09,
-                            Color(0xFF8A7A46),
+                            Color(0xFF4A7C6F),
                           ),
                         ],
                 ),

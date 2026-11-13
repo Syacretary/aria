@@ -36,6 +36,7 @@ class AriaSheet {
     bool isDismissible = true,
     bool useSafeArea = true,
     bool haptic = true,
+    double maxHeightFactor = 0.9,
     Color? barrierColor,
   }) {
     if (haptic) {
@@ -55,6 +56,7 @@ class AriaSheet {
           isScrollControlled: isScrollControlled,
           enableDrag: enableDrag,
           useSafeArea: useSafeArea,
+          maxHeightFactor: maxHeightFactor,
           child: Builder(builder: builder),
         );
       },
@@ -125,19 +127,29 @@ class _AriaSheetSurface extends StatelessWidget {
     required this.isScrollControlled,
     required this.enableDrag,
     required this.useSafeArea,
+    required this.maxHeightFactor,
   });
 
   final Widget child;
   final bool isScrollControlled;
   final bool enableDrag;
   final bool useSafeArea;
+  final double maxHeightFactor;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final mediaQuery = MediaQuery.of(context);
+    // The keyboard takes real vertical space. Capping against the usable
+    // viewport, rather than the raw screen height, prevents a text composer
+    // from overflowing on compact devices.
+    final usableHeight =
+        mediaQuery.size.height -
+        mediaQuery.padding.top -
+        (isScrollControlled ? mediaQuery.viewInsets.bottom : 0);
     Widget surface = ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.9,
+        maxHeight: usableHeight * maxHeightFactor.clamp(0.5, 0.98),
       ),
       child: Material(
         color: theme.colorScheme.surface,

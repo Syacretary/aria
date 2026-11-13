@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/companion/aria_tone.dart';
 import '../../../../core/config/app_config.dart';
@@ -9,16 +11,17 @@ import '../../../../core/motion/aria_sheet.dart';
 import '../../../../core/presentation/aria_loading.dart';
 import '../../../../core/presentation/aria_scaffold.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/theme_provider.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/utils/duration_x.dart';
+import '../../check_ins/data/spot_check_notifications.dart';
+import '../../../core/di/providers.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/permission_status.dart';
 import 'providers/settings_providers.dart';
 import 'widgets/permission_row.dart';
 import 'widgets/settings_section.dart';
-import 'widgets/theme_mode_selector.dart';
 
-/// Pengaturan — permissions, appearance, ARIA's voice, and data controls.
+/// Pengaturan — permissions, ARIA's voice, and data controls.
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -28,7 +31,7 @@ class SettingsPage extends ConsumerWidget {
 
     return AriaScaffold(
       title: 'Pengaturan',
-      subtitle: 'Izin, tampilan, dan lainnya',
+      subtitle: 'Izin dan preferensi ARIA',
       child: settings.when(
         loading: () => const Padding(
           padding: EdgeInsets.all(AppSpacing.pageGutter),
@@ -51,8 +54,6 @@ class _Content extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.pageGutter,
@@ -63,20 +64,6 @@ class _Content extends ConsumerWidget {
       children: [
         // --- Permissions -----------------------------------------------------
         _PermissionsSection(),
-        const SizedBox(height: AppSpacing.xl),
-
-        // --- Appearance ------------------------------------------------------
-        SettingsSection(
-          title: 'Tampilan',
-          caption: 'Pilih terang atau gelap; tersimpan otomatis',
-          children: [
-            ThemeModeSelector(
-              mode: themeMode,
-              onChanged: (mode) =>
-                  ref.read(themeModeProvider.notifier).setMode(mode),
-            ),
-          ],
-        ),
         const SizedBox(height: AppSpacing.xl),
 
         // --- ARIA's voice ----------------------------------------------------
@@ -107,6 +94,24 @@ class _Content extends ConsumerWidget {
                 onChanged: (value) =>
                     _save(context, ref, quietHoursEnabled: value),
               ),
+            ),
+            SettingsRow(
+              label: 'AI Penasihat ARIA',
+              subtitle: 'Koneksi model, privasi, dan pesan proaktif',
+              trailing: Icon(
+                Icons.chevron_right_rounded,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              onTap: () => context.push(Routes.settingsAriaAi),
+            ),
+            SettingsRow(
+              label: 'Check-in berkala',
+              subtitle: 'Refleksi singkat tentang ritme dan fokusmu',
+              trailing: Icon(
+                Icons.chevron_right_rounded,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              onTap: () => context.push(Routes.spotCheck),
             ),
           ],
         ),
@@ -273,8 +278,7 @@ class _Content extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Batas aplikasi, preferensi, dan riwayat lokal akan dihapus. '
-              'Tindakan ini tidak bisa dibatalkan.',
+              'Semua batas, preferensi, dan riwayat lokal akan dihapus permanen.',
               style: Theme.of(sheetContext).textTheme.bodyMedium,
             ),
             const SizedBox(height: AppSpacing.xl),
@@ -309,6 +313,11 @@ class _Content extends ConsumerWidget {
     if (!context.mounted) return;
 
     if (failure == null) {
+      await SpotCheckNotifications.cancel();
+      await const MethodChannel('com.aria.aria/proactive')
+          .invokeMethod<void>('cancel');
+      await const MethodChannel('com.aria.aria/secure_store')
+          .invokeMethod<void>('clearSession');
       AriaFeedback.success(context, 'Semua data ARIA telah dihapus.');
     } else {
       AriaFeedback.warning(context, failure.message);
@@ -325,14 +334,40 @@ class _Content extends ConsumerWidget {
 
 /// Permissions block, loaded separately so a slow OS query doesn't hold up the
 /// rest of the screen.
-class _PermissionsSection extends ConsumerWidget {
+class _PermissionsSection extends ConsumerStatefulWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PermissionsSection> createState() =>
+      _PermissionsSectionState();
+}
+
+class _PermissionsSectionState extends ConsumerState<_PermissionsSection>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(permissionStatesProvider);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final permissions = ref.watch(permissionStatesProvider);
 
     return SettingsSection(
       title: 'Izin aplikasi',
-      caption: 'Diperlukan agar ARIA dapat bekerja',
+      caption: 'Pilih fitur yang ingin kamu aktifkan. Izin dapat dicabut kapan saja.',
       children: [
         permissions.when(
           loading: () => const Padding(
@@ -348,6 +383,8 @@ class _PermissionsSection extends ConsumerWidget {
           ),
           data: (states) => Column(
             children: [
+              if (!(states[AppPermission.usageAccess]?.isGranted ?? false))
+                const _PermissionContextCard(),
               for (var i = 0; i < AppPermission.values.length; i++) ...[
                 if (i > 0)
                   Divider(
@@ -361,8 +398,7 @@ class _PermissionsSection extends ConsumerWidget {
                   permission: AppPermission.values[i],
                   state:
                       states[AppPermission.values[i]] ?? PermissionState.denied,
-                  onRequest: () =>
-                      _request(context, ref, AppPermission.values[i]),
+                  onRequest: () => _request(context, AppPermission.values[i]),
                 ),
               ],
             ],
@@ -372,11 +408,11 @@ class _PermissionsSection extends ConsumerWidget {
     );
   }
 
-  Future<void> _request(
-    BuildContext context,
-    WidgetRef ref,
-    AppPermission permission,
-  ) async {
+  Future<void> _request(BuildContext context, AppPermission permission) async {
+    if (permission == AppPermission.scrollDetection) {
+      final accepted = await _showScrollDisclosure(context);
+      if (accepted != true || !context.mounted) return;
+    }
     final result = await ref.read(checkPermissionsProvider).request(permission);
     if (!context.mounted) return;
 
@@ -390,4 +426,75 @@ class _PermissionsSection extends ConsumerWidget {
       err: (failure) => AriaFeedback.warning(context, failure.message),
     );
   }
+
+  Future<bool?> _showScrollDisclosure(BuildContext context) =>
+      AriaSheet.show<bool>(
+        context: context,
+        builder: (sheetContext) => Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Deteksi scroll',
+                style: Theme.of(sheetContext).textTheme.titleLarge,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                'ARIA menghitung perkiraan video yang dilewati di Instagram, YouTube, dan TikTok tanpa membaca isi layar, lalu menyimpan hitungannya di perangkat ini.',
+                style: Theme.of(sheetContext).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(sheetContext, false),
+                      child: const Text('Nanti saja'),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(sheetContext, true),
+                      child: const Text('Saya mengerti'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+}
+
+class _PermissionContextCard extends StatelessWidget {
+  const _PermissionContextCard();
+
+  @override
+  Widget build(BuildContext context) => Container(
+    margin: const EdgeInsets.all(AppSpacing.md),
+    padding: const EdgeInsets.all(AppSpacing.md),
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.primaryContainer
+          .withValues(alpha: .55),
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          Icons.insights_outlined,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        const Expanded(
+          child: Text(
+            'Beranda masih menunggu data pemakaian. Aktifkan “Akses data pemakaian” untuk melihat screentime dan frekuensi buka aplikasi.',
+          ),
+        ),
+      ],
+    ),
+  );
 }

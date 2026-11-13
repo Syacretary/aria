@@ -6,7 +6,9 @@
 /// provider in `bootstrap.dart`) — no UI code changes.
 abstract final class FeatureFlags {
   /// When true, all repositories read from mock data sources.
-  static const bool useMockData = true;
+  /// Release builds read the device's Usage Access data on Android. Tests can
+  /// still override the source provider with [UsageStatsMockSource].
+  static const bool useMockData = false;
 
   /// Whether the ARIA companion chat is available. The sheet itself is a stub
   /// in iteration 1.

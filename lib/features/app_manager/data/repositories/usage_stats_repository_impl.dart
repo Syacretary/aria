@@ -1,5 +1,6 @@
 import '../../../../core/error/failure.dart';
 import '../../../../core/error/result.dart';
+import '../../../../core/error/exceptions.dart';
 import '../../domain/entities/usage_session.dart';
 import '../../domain/repositories/usage_stats_repository.dart';
 import '../datasources/usage_stats_source.dart';
@@ -30,6 +31,8 @@ class UsageStatsRepositoryImpl implements UsageStatsRepository {
 Future<Result<T>> _guard<T>(Future<T> Function() body) async {
   try {
     return Ok(await body());
+  } on PlatformExceptionWrapper catch (error) {
+    return Err(PlatformFailure(error.message));
   } on Object {
     return const Err(
       PlatformFailure('Data pemakaian tidak dapat dibaca di perangkat ini.'),

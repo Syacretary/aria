@@ -14,4 +14,32 @@ abstract final class PrefKeys {
 
   /// Seeded flag so mock data stays stable between launches.
   static const String mockSeedInitialised = 'aria.debug.mock_seed';
+
+  /// JSON daily measurements retained locally (maximum 35 days). No raw
+  /// event stream, screen contents, or account data is persisted.
+  static const String usageDailyHistory = 'aria.usage.daily_history.v1';
+
+  /// Per-session video advances reported by ARIA-owned feed integrations.
+  static const String scrollSessions = 'aria.usage.scroll_sessions.v1';
+
+  /// Lifetime count of short social-app visits that ended within one minute.
+  static const String quickSocialReturns =
+      'aria.achievements.quick_social_returns';
+  static const String intentionalSocialExits =
+      'aria.achievements.intentional_exits';
+  static const String completedBreathingPauses =
+      'aria.achievements.completed_pauses';
+
+  /// Dates already credited toward cumulative achievement levels.
+  static const String achievementProgress = 'aria.achievements.progress.v1';
+
+  /// Opt-in and cadence for private, local spot-check notifications.
+  static const String spotCheckEnabled = 'aria.check_ins.enabled';
+  static const String spotCheckIntervalDays = 'aria.check_ins.interval_days';
+
+  /// Completed spot-checks and answers, retained only on this device.
+  static const String spotCheckHistory = 'aria.check_ins.history.v1';
+
+  static const String ariaAiEnabled = 'aria.ai.enabled';
+  static const String ariaAiProactive = 'aria.ai.proactive';
 }

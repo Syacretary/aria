@@ -58,22 +58,11 @@ class _Content extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.ariaColors;
+    final win = wins.first;
     return AriaCard(
       eyebrow: 'Kemenangan hari ini',
-      title: '${wins.length} hal yang kamu jaga',
-      child: Column(
-        children: [
-          for (var i = 0; i < wins.length; i++) ...[
-            if (i > 0)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                child: Divider(color: colors.hairline, height: 1),
-              ),
-            _WinRow(win: wins[i]),
-          ],
-        ],
-      ),
+      title: 'Satu hal yang kamu jaga',
+      child: _WinRow(win: win),
     );
   }
 }

@@ -3,6 +3,9 @@ enum AppPermission {
   /// `PACKAGE_USAGE_STATS` — reading screen time and app launches.
   usageAccess,
 
+  /// Observes only `TYPE_VIEW_SCROLLED` events in supported short-video apps.
+  scrollDetection,
+
   /// Posting the "limit reached" notification.
   notifications,
 
@@ -25,6 +28,7 @@ enum PermissionState {
 extension AppPermissionX on AppPermission {
   String get label => switch (this) {
     AppPermission.usageAccess => 'Akses data pemakaian',
+    AppPermission.scrollDetection => 'Deteksi scroll video',
     AppPermission.notifications => 'Notifikasi',
     AppPermission.overlay => 'Tampil di atas aplikasi lain',
     AppPermission.batteryExemption => 'Jalankan di latar belakang',
@@ -34,10 +38,11 @@ extension AppPermissionX on AppPermission {
   String get rationale => switch (this) {
     AppPermission.usageAccess =>
       'Diperlukan untuk menghitung screentime dan jumlah buka aplikasi.',
+    AppPermission.scrollDetection => 'Menghitung scroll di aplikasi video yang didukung, tanpa membaca isi layar atau pesan.',
     AppPermission.notifications =>
       'Agar ARIA bisa mengingatkan saat batas hampir tercapai.',
     AppPermission.overlay =>
-      'Untuk menampilkan jeda bernapas saat batas terpakai.',
+      'Untuk menampilkan counter scroll kecil di atas aplikasi video yang didukung.',
     AppPermission.batteryExemption =>
       'Supaya batas tetap bekerja walau layar lama tidak dibuka.',
   };
@@ -48,6 +53,7 @@ extension AppPermissionX on AppPermission {
   /// UI shows a "open settings" action instead of a request button.
   bool get requiresManualGrant => switch (this) {
     AppPermission.usageAccess => true,
+    AppPermission.scrollDetection => true,
     AppPermission.batteryExemption => true,
     AppPermission.notifications => false,
     AppPermission.overlay => false,

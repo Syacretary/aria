@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="aria_accessibility_description">Menghitung perpindahan video pada aplikasi yang didukung dan jumlah kunjungan singkat ke aplikasi sosial untuk pencapaian Self-control. Hanya angka agregat yang disimpan lokal; ARIA tidak membaca teks, pesan, kata sandi, atau isi layar.</string>
     <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is off -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- Show a splash screen on the activity. Automatically removed when

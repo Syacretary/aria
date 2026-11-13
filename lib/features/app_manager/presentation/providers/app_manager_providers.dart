@@ -89,6 +89,7 @@ class ManagedAppsNotifier extends AsyncNotifier<List<ManagedApp>> {
     required Duration quota,
     bool enabled = true,
     LimitEnforcement enforcement = LimitEnforcement.breathe,
+    bool remindOnOpen = false,
   }) async {
     final usecase = ref.read(setDailyLimitProvider);
     final result = await usecase(
@@ -96,6 +97,7 @@ class ManagedAppsNotifier extends AsyncNotifier<List<ManagedApp>> {
       quota: quota,
       enabled: enabled,
       enforcement: enforcement,
+      remindOnOpen: remindOnOpen,
     );
 
     return result.when(

@@ -47,10 +47,13 @@ class ShellScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: _AriaNavigationBar(
-        tabs: _tabs,
-        currentIndex: navigationShell.currentIndex,
-        onSelected: _onDestinationSelected,
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: _AriaNavigationBar(
+          tabs: _tabs,
+          currentIndex: navigationShell.currentIndex,
+          onSelected: _onDestinationSelected,
+        ),
       ),
     );
   }
@@ -72,32 +75,35 @@ class _AriaNavigationBar extends StatelessWidget {
     final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        border: Border(
-          top: BorderSide(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-          ),
+        color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.45),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.09),
+            blurRadius: 28,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm,
-            vertical: AppSpacing.xs,
-          ),
-          child: Row(
-            children: [
-              for (var i = 0; i < tabs.length; i++)
-                Expanded(
-                  child: _NavBarItem(
-                    spec: tabs[i],
-                    selected: i == currentIndex,
-                    onTap: () => onSelected(i),
-                  ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        child: Row(
+          children: [
+            for (var i = 0; i < tabs.length; i++)
+              Expanded(
+                child: _NavBarItem(
+                  spec: tabs[i],
+                  selected: i == currentIndex,
+                  onTap: () => onSelected(i),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
