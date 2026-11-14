@@ -228,6 +228,7 @@ class MainActivity : FlutterActivity() {
             "scrollDetection" -> startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             "overlay" -> startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
             "batteryExemption" -> startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName")))
+            "appSettings" -> startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
             "notifications" -> if (Build.VERSION.SDK_INT >= 33) {
                 notificationResult = result
                 requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 901)

@@ -48,6 +48,26 @@ ARIA hadir bukan sebagai "penjara digital", melainkan sebagai **pendamping sadar
 
 ---
 
+## ⚡ Panduan Instalasi & Aktivasi Izin (Penting)
+
+Bagi pengguna yang menginstal file APK rilis secara langsung (*sideload*), ikuti 2 panduan singkat berikut agar aplikasi terinstal dan seluruh fitur deteksi berfungsi normal:
+
+### 1. Melewati Peringatan Google Play Protect saat Install
+Karena file APK diunduh langsung dari GitHub (bukan melalui Play Store), Play Protect akan memunculkan peringatan pemblokiran:
+1. Saat pop-up peringatan Play Protect muncul, **jangan** tekan "Oke".
+2. Ketuk **"Detail selengkapnya"** *(More details)*.
+3. Ketuk **"Tetap instal"** *(Install anyway)*.
+> *Catatan: ARIA murni beroperasi secara lokal untuk mengukur waktu layar dan scroll video Anda. Tidak ada data pribadi atau konten layar yang dikumpulkan.*
+
+### 2. Membuka Kunci Izin Aksesibilitas di Android 13, 14, & 15 ("Setelan Dibatasi")
+Android 13+ secara otomatis mengunci (*grayed out*) tombol Aksesibilitas untuk aplikasi yang dipasang di luar Play Store dengan pesan *"Setelan dibatasi" (Restricted setting)*:
+1. Buka **Pengaturan HP (Settings)** ➔ **Aplikasi (Apps)** ➔ cari dan pilih **ARIA**.
+2. Di halaman **Info Aplikasi (App Info)** tersebut, lihat **pojok kanan atas** lalu ketuk **ikon titik tiga (⋮)**.
+3. Pilih menu **"Izinkan setelan terbatas"** *(Allow restricted settings)*, lalu konfirmasi dengan PIN, Pola, atau Sidik Jari HP Anda.
+4. Buka kembali aplikasi ARIA atau masuk ke menu **Aksesibilitas** HP ➔ **Aplikasi yang didownload** ➔ pilih **ARIA pelacak scroll** ➔ aktifkan toggle izin.
+
+---
+
 ## 3. Cara Menggunakan ARIA
 
 ```

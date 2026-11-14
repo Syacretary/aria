@@ -56,6 +56,9 @@ dependency_overrides:
 flutter:
   uses-material-design: true
 
+  assets:
+    - assets/permissions/
+
   # Plus Jakarta Sans is vendored rather than fetched at runtime. A companion
   # app should render its first frame identically on a plane as on wifi, and
   # bundled fonts also make golden tests deterministic.

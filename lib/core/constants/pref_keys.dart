@@ -42,4 +42,8 @@ abstract final class PrefKeys {
 
   static const String ariaAiEnabled = 'aria.ai.enabled';
   static const String ariaAiProactive = 'aria.ai.proactive';
+
+  /// Whether the user has seen or completed the initial permission onboarding.
+  static const String permissionOnboardingCompleted =
+      'aria.onboarding.permission_flow_completed';
 }

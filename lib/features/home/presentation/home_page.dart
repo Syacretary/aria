@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/constants/pref_keys.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/aria_semantic_colors.dart';
 import '../../../../core/utils/date_x.dart';
+import '../../settings/presentation/widgets/permission_onboarding_sheet.dart';
 import '../domain/entities/daily_summary.dart';
 import 'providers/home_providers.dart';
 import 'widgets/aria_message_card.dart';
@@ -17,11 +20,31 @@ import 'widgets/usage_period_card.dart';
 
 /// Beranda — the mindful digital wellbeing home feed.
 /// Designed for calm, visual-first clarity in under 3 seconds.
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkFirstLaunchPermissions());
+  }
+
+  Future<void> _checkFirstLaunchPermissions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final completed =
+        prefs.getBool(PrefKeys.permissionOnboardingCompleted) ?? false;
+    if (!completed && mounted) {
+      await PermissionOnboardingSheet.show(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final greeting = ref.watch(_greetingProvider);
     final theme = Theme.of(context);
     final topInset = MediaQuery.of(context).padding.top;

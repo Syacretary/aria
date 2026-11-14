@@ -11,12 +11,14 @@ import '../../../../core/motion/aria_sheet.dart';
 import '../../../../core/presentation/aria_loading.dart';
 import '../../../../core/presentation/aria_scaffold.dart';
 import '../../../../core/routing/routes.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/duration_x.dart';
 import '../../check_ins/data/spot_check_notifications.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/permission_status.dart';
 import 'providers/settings_providers.dart';
+import 'widgets/permission_onboarding_sheet.dart';
 import 'widgets/permission_row.dart';
 import 'widgets/settings_section.dart';
 
@@ -424,6 +426,27 @@ class _PermissionsSectionState extends ConsumerState<_PermissionsSection>
               state: states[permission] ?? PermissionState.denied,
               onRequest: () => _request(context, permission),
             ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              AppSpacing.sm,
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => PermissionOnboardingSheet.show(context),
+                icon: const Icon(Icons.menu_book_outlined, size: 16),
+                label: const Text('Buka Panduan Izin Bergambar'),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
