@@ -7,7 +7,6 @@ import '../../../../core/motion/aria_motion.dart';
 import '../../../../core/presentation/aria_card.dart';
 import '../../../../core/presentation/aria_empty_state.dart';
 import '../../../../core/presentation/aria_loading.dart';
-import '../../../../core/presentation/aria_section_header.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -17,9 +16,7 @@ import '../../domain/entities/top_app_usage.dart';
 import '../providers/home_providers.dart';
 
 /// Screen time per app — exactly three rows, busiest first.
-///
-/// Capped at three on purpose: a longer list turns a nudge into a dashboard, and
-/// the full picture lives in App Manager.
+/// Streamlined and visually focused on duration and proportional usage.
 class TopAppsCard extends ConsumerWidget {
   const TopAppsCard({super.key});
 
@@ -29,7 +26,7 @@ class TopAppsCard extends ConsumerWidget {
 
     return apps.when(
       loading: () => const AriaCard(
-        eyebrow: 'Paling banyak dipakai',
+        eyebrow: 'Aplikasi terbanyak digunakan',
         child: AriaSkeletonLines(lines: 3),
       ),
       error: (error, _) => AriaCard(
@@ -66,7 +63,7 @@ class _Content extends StatelessWidget {
     final busiest = apps.first.screenTime;
 
     return AriaCard(
-      eyebrow: 'Paling banyak dipakai',
+      eyebrow: 'Aplikasi terbanyak digunakan',
       trailing: TextButton(
         onPressed: () => context.go(Routes.appManager),
         style: TextButton.styleFrom(
@@ -79,7 +76,7 @@ class _Content extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < apps.length; i++) ...[
-            if (i > 0) const SizedBox(height: AppSpacing.xl),
+            if (i > 0) const SizedBox(height: AppSpacing.md + 2),
             _AppRow(
               app: apps[i],
               rank: i + 1,
@@ -112,96 +109,73 @@ class _AppRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = context.ariaColors;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            _AppMark(rank: rank),
+            Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                color: rank == 1
+                    ? theme.colorScheme.primaryContainer
+                    : theme.colorScheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(AppRadius.xs),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '$rank',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: rank == 1
+                      ? theme.colorScheme.onPrimaryContainer
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          app.appName,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                  Flexible(
+                    child: Text(
+                      app.appName,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                      if (app.isLimited) ...[
-                        const SizedBox(width: AppSpacing.sm),
-                        AriaTag(
-                          label: 'dibatasi',
-                          color: context.ariaColors.win,
-                          icon: Icons.shield_outlined,
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${app.sessionCount}× buka · rata-rata '
-                    '${app.averageSession.compact}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
+                  if (app.isLimited) ...[
+                    const SizedBox(width: AppSpacing.xs),
+                    Icon(
+                      Icons.shield_outlined,
+                      size: 14,
+                      color: colors.win,
+                    ),
+                  ],
                 ],
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
-            Text(app.screenTime.compact, style: theme.textTheme.titleSmall),
+            Text(
+              app.screenTime.compact,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: 6),
         _UsageBar(
           fraction: fraction,
           fillColor: fillColor,
           trackColor: trackColor,
         ),
       ],
-    );
-  }
-}
-
-/// The app mark: a squircle carrying the rank, so each row shows its own
-/// ordering instead of a generic letter avatar.
-class _AppMark extends StatelessWidget {
-  const _AppMark({required this.rank});
-
-  final int rank;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isFirst = rank == 1;
-
-    return Container(
-      width: 38,
-      height: 38,
-      decoration: BoxDecoration(
-        color: isFirst
-            ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        '$rank',
-        style: theme.textTheme.titleMedium?.copyWith(
-          color: isFirst
-              ? theme.colorScheme.onPrimaryContainer
-              : theme.colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
     );
   }
 }
@@ -220,14 +194,14 @@ class _UsageBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: AppRadius.pill,
+      borderRadius: BorderRadius.circular(3),
       child: SizedBox(
         height: 5,
         child: LayoutBuilder(
           builder: (context, constraints) {
             return Stack(
               children: [
-                Container(color: trackColor),
+                Container(color: trackColor.withValues(alpha: 0.4)),
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: fraction),
                   duration: AriaMotion.chartEnter,

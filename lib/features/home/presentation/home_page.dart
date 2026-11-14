@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/aria_semantic_colors.dart';
 import '../../../../core/utils/date_x.dart';
-import '../../../../core/routing/routes.dart';
 import '../domain/entities/daily_summary.dart';
 import 'providers/home_providers.dart';
 import 'widgets/aria_message_card.dart';
@@ -14,25 +14,17 @@ import 'widgets/seven_day_trend_card.dart';
 import 'widgets/todays_wins_card.dart';
 import 'widgets/top_apps_card.dart';
 import 'widgets/usage_period_card.dart';
-import '../../../../core/routing/routes.dart';
 
-/// Beranda — the home feed.
-///
-/// Six blocks, each owning its own loading and error state:
-/// 1. today's video count,
-/// 2. ARIA's message with the "Ngobrol" follow-up,
-/// 3. today's wins,
-/// 4. daily/weekly/monthly social opens,
-/// 5. the 7-day trend,
-/// 6. top-3 apps by screen time.
+/// Beranda — the mindful digital wellbeing home feed.
+/// Designed for calm, visual-first clarity in under 3 seconds.
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final greeting = ref.watch(_greetingProvider);
-
     final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -52,8 +44,6 @@ class HomePage extends ConsumerWidget {
                 ..invalidate(topAppsProvider)
                 ..invalidate(todaysWinsProvider)
                 ..invalidate(ariaMessageProvider);
-              // Give the invalidated providers a frame to start loading so the
-              // spinner doesn't vanish before the skeletons appear.
               await Future<void>.delayed(const Duration(milliseconds: 250));
             },
             child: ListView(
@@ -65,32 +55,44 @@ class HomePage extends ConsumerWidget {
               ),
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                const DailySummaryCard(),
-                const SizedBox(height: AppSpacing.xxl),
-                ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: [const Color(0xFFB08232), const Color(0xFF8E73B8)],
-                  ).createShader(bounds),
-                  child: Text(
-                    greeting.title,
-                    style: theme.textTheme.headlineMedium,
+                // Quiet, grounding greeting
+                Text(
+                  greeting.title,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
+                const SizedBox(height: 2),
                 Text(
                   DateTime.now().longDateId,
-                  style: theme.textTheme.bodySmall,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.lg),
+
+                // 1. Hero Summary Card
+                const DailySummaryCard(),
+                const SizedBox(height: AppSpacing.cardGap),
+
+                // 2. ARIA Companion Message
                 const AriaMessageCard(),
                 const SizedBox(height: AppSpacing.cardGap),
+
+                // 3. Today's Wins (Rewarded progress)
                 const TodaysWinsCard(),
                 const SizedBox(height: AppSpacing.cardGap),
+
+                // 4. Social Open Frequency (Daily/Weekly/Monthly)
                 const UsagePeriodCard(),
                 const SizedBox(height: AppSpacing.cardGap),
+
+                // 5. 7-Day Trend Chart
                 const SevenDayTrendCard(),
                 const SizedBox(height: AppSpacing.cardGap),
+
+                // 6. Top 3 Apps by Screen Time
                 const TopAppsCard(),
               ],
             ),
@@ -116,7 +118,9 @@ class HomePage extends ConsumerWidget {
                         child: Center(
                           child: Text(
                             'Aria',
-                            style: theme.textTheme.titleLarge,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
@@ -158,15 +162,15 @@ class _HeaderAction extends StatelessWidget {
       child: Material(
         color: theme.colorScheme.surfaceContainerLowest.withValues(alpha: .95),
         shape: const CircleBorder(),
-        elevation: 3,
-        shadowColor: colors.win.withValues(alpha: .16),
+        elevation: 2,
+        shadowColor: colors.win.withValues(alpha: .12),
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: onTap,
           child: SizedBox(
-            width: 42,
-            height: 42,
-            child: Icon(icon, size: 20, color: colors.win),
+            width: 40,
+            height: 40,
+            child: Icon(icon, size: 19, color: colors.win),
           ),
         ),
       ),
@@ -174,8 +178,7 @@ class _HeaderAction extends StatelessWidget {
   }
 }
 
-/// Soft light source on Beranda; it becomes the visual origin for ARIA's
-/// smiley face when the companion route opens.
+/// Soft light source on Beranda
 class _WelcomeLightCircle extends StatelessWidget {
   const _WelcomeLightCircle();
 
@@ -198,9 +201,7 @@ class _WelcomeLightCircle extends StatelessWidget {
   );
 }
 
-/// Time-of-day greeting derived from the daily summary's calm/direction.
-///
-/// Split out so the header reacts to data without rebuilding the feed.
+/// Time-of-day greeting
 final _greetingProvider = Provider<({String title, String? note})>((ref) {
   final hour = DateTime.now().hour;
   final base = switch (hour) {

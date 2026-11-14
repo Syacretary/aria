@@ -12,10 +12,8 @@ import '../../../../core/utils/date_x.dart';
 import '../../domain/entities/win_entry.dart';
 import '../providers/home_providers.dart';
 
-/// Today's accomplishments.
-///
-/// Framed as choices the user made ("Menunda TikTok") rather than scores, so the
-/// card reinforces agency. The empty state is an invitation, not a failure.
+/// Today's accomplishments card.
+/// Minimalist celebration of user agency without clutter.
 class TodaysWinsCard extends ConsumerWidget {
   const TodaysWinsCard({super.key});
 
@@ -26,7 +24,7 @@ class TodaysWinsCard extends ConsumerWidget {
     return wins.when(
       loading: () => const AriaCard(
         eyebrow: 'Kemenangan hari ini',
-        child: AriaSkeletonLines(lines: 3),
+        child: AriaSkeletonLines(lines: 2),
       ),
       error: (error, _) => AriaCard(
         child: Text(
@@ -41,7 +39,7 @@ class TodaysWinsCard extends ConsumerWidget {
               compact: true,
               icon: Icons.emoji_events_outlined,
               title: 'Belum ada kemenangan hari ini',
-              message: 'Menahan satu godaan saja sudah dihitung.',
+              message: 'Menahan satu godaan saja sudah dihitung sebagai langkah maju.',
             ),
           );
         }
@@ -59,66 +57,75 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final win = wins.first;
+    final theme = Theme.of(context);
+    final colors = context.ariaColors;
+
     return AriaCard(
       eyebrow: 'Kemenangan hari ini',
-      title: 'Satu hal yang kamu jaga',
-      child: _WinRow(win: win),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: colors.win.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              _iconFor(win.icon),
+              size: 18,
+              color: colors.win,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  win.label,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  win.detail,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHigh,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              win.occurredAt.shortTimeId,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 11,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
-}
 
-class _WinRow extends StatelessWidget {
-  const _WinRow({required this.win});
-
-  final WinEntry win;
-
-  IconData get _icon => switch (win.icon) {
+  static IconData _iconFor(WinKind kind) => switch (kind) {
     WinKind.delay => Icons.pause_circle_outline_rounded,
     WinKind.limitKept => Icons.verified_outlined,
     WinKind.offline => Icons.wifi_off_rounded,
     WinKind.focus => Icons.center_focus_strong_outlined,
     WinKind.prayer => Icons.self_improvement_rounded,
   };
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = context.ariaColors;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 34,
-          height: 34,
-          decoration: BoxDecoration(
-            color: colors.win.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(AppRadius.xs),
-          ),
-          child: Icon(_icon, size: 17, color: colors.win),
-        ),
-        const SizedBox(width: AppSpacing.md),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                win.label,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 1),
-              Text(
-                '${win.detail} · ${win.occurredAt.shortTimeId}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 }

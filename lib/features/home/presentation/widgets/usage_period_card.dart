@@ -14,9 +14,7 @@ import '../../domain/entities/period_stats.dart';
 import '../providers/home_providers.dart';
 
 /// Harian / Mingguan / Bulanan social-app open counts.
-///
-/// The segmented control changes which figure is emphasised rather than swapping
-/// the whole card, so the user can compare periods without losing their place.
+/// Clean, minimal, and instantly clear with visual comparisons.
 class UsagePeriodCard extends ConsumerStatefulWidget {
   const UsagePeriodCard({super.key});
 
@@ -33,7 +31,7 @@ class _UsagePeriodCardState extends ConsumerState<UsagePeriodCard> {
 
     return breakdown.when(
       loading: () => const AriaCard(
-        eyebrow: 'Membuka aplikasi sosial media',
+        eyebrow: 'Frekuensi buka sosmed',
         child: AriaSkeletonLines(lines: 3),
       ),
       error: (error, _) => AriaCard(
@@ -72,43 +70,48 @@ class _Content extends StatelessWidget {
     final colors = context.ariaColors;
     final stat = breakdown.all[selected];
     final isUp = stat.deltaRatio > 0;
-    // Lower is better for opens, so the positive colour is the downward one.
     final deltaColor = isUp ? colors.over : colors.win;
 
     return AriaCard(
-      eyebrow: 'Membuka aplikasi sosial media',
+      eyebrow: 'Frekuensi buka sosmed',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Segmented Switcher
           _SegmentedControl(
             labels: breakdown.all.map((s) => s.label).toList(growable: false),
             selected: selected,
             onSelect: onSelect,
           ),
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.lg),
+
+          // Main Stat & Comparison Pill
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text('${stat.opens}', style: theme.textTheme.displaySmall),
-              const SizedBox(width: AppSpacing.sm),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  'kali',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+              Text(
+                '${stat.opens}',
+                style: theme.textTheme.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                'kali',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
+                  horizontal: 8,
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: deltaColor.withValues(alpha: 0.10),
+                  color: deltaColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Row(
@@ -118,7 +121,7 @@ class _Content extends StatelessWidget {
                       isUp
                           ? Icons.arrow_upward_rounded
                           : Icons.arrow_downward_rounded,
-                      size: 12,
+                      size: 13,
                       color: deltaColor,
                     ),
                     const SizedBox(width: 3),
@@ -127,7 +130,6 @@ class _Content extends StatelessWidget {
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: deltaColor,
                         fontWeight: FontWeight.w700,
-                        letterSpacing: 0,
                       ),
                     ),
                   ],
@@ -135,9 +137,9 @@ class _Content extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.xs),
+          const SizedBox(height: 2),
           Text(
-            'dibanding periode sebelumnya (${stat.previousOpens}×)',
+            'Periode sebelumnya: ${stat.previousOpens}×',
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -148,12 +150,6 @@ class _Content extends StatelessWidget {
   }
 }
 
-/// Three-way selector.
-///
-/// Hand-rolled rather than `SegmentedButton` so the motion, radius and haptic
-/// match the rest of the app exactly. The travelling indicator is a single
-/// animated pill behind the labels, which is what makes the switch read as one
-/// physical control sliding rather than three buttons lighting up.
 class _SegmentedControl extends StatelessWidget {
   const _SegmentedControl({
     required this.labels,
@@ -172,7 +168,7 @@ class _SegmentedControl extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer,
+        color: theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
         borderRadius: AppRadius.pill,
       ),
       child: LayoutBuilder(
@@ -191,6 +187,13 @@ class _SegmentedControl extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerLowest,
                     borderRadius: AppRadius.pill,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -204,7 +207,7 @@ class _SegmentedControl extends StatelessWidget {
                         semanticLabel: labels[i],
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                            vertical: AppSpacing.sm,
+                            vertical: AppSpacing.sm - 2,
                           ),
                           child: Text(
                             labels[i],

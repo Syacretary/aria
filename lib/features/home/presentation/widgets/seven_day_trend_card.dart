@@ -13,10 +13,7 @@ import '../../domain/entities/trend_point.dart';
 import '../providers/home_providers.dart';
 
 /// Seven-day screen-time trend against the daily target.
-///
-/// Bars over target are tinted with the concern colour and a dashed hairline
-/// marks the target itself, so the chart answers "am I trending better?" at a
-/// glance without the user reading a single number.
+/// Minimalist visual-first presentation.
 class SevenDayTrendCard extends ConsumerWidget {
   const SevenDayTrendCard({super.key});
 
@@ -26,7 +23,7 @@ class SevenDayTrendCard extends ConsumerWidget {
 
     return trend.when(
       loading: () => const AriaCard(
-        eyebrow: 'Tren',
+        eyebrow: 'Tren 7 hari',
         child: AriaSkeleton(height: 104, radius: 12),
       ),
       error: (error, _) => AriaCard(
@@ -57,13 +54,24 @@ class _Content extends StatelessWidget {
         : points.map((p) => p.screenTime.inMinutes).reduce((a, b) => a + b) ~/
               points.length;
 
-    // The target as a fraction of the chart ceiling (target * 1.4), matching
-    // TrendPoint.fraction so bars and the line agree on scale.
     const targetFraction = 1 / 1.4;
 
     return AriaCard(
       eyebrow: 'Tren 7 hari',
-      title: '$withinTarget dari ${points.length} hari sesuai target',
+      trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: colors.win.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          '$withinTarget/${points.length} hari terkendali',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: colors.win,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       clip: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,20 +91,20 @@ class _Content extends StatelessWidget {
             overColor: colors.over,
             targetFraction: targetFraction,
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.md),
           Row(
             children: [
               _LegendDot(color: colors.usageFill, label: 'Sesuai target'),
-              const SizedBox(width: AppSpacing.lg),
+              const SizedBox(width: AppSpacing.md),
               _LegendDot(color: colors.over, label: 'Lewat target'),
+              const Spacer(),
+              Text(
+                'Rata-rata ${Duration(minutes: averageMinutes).compact}/hari',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Rata-rata ${Duration(minutes: averageMinutes).inWordsId} per hari',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
           ),
         ],
       ),
@@ -104,7 +112,6 @@ class _Content extends StatelessWidget {
   }
 }
 
-/// A tiny colour key. Replaces a full legend: two dots and two words.
 class _LegendDot extends StatelessWidget {
   const _LegendDot({required this.color, required this.label});
 
@@ -120,18 +127,14 @@ class _LegendDot extends StatelessWidget {
         Container(
           width: 7,
           height: 7,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-        const SizedBox(width: AppSpacing.xs),
+        const SizedBox(width: 4),
         Text(
           label,
           style: theme.textTheme.labelSmall?.copyWith(
-            letterSpacing: 0.2,
-            fontWeight: FontWeight.w500,
             color: theme.colorScheme.onSurfaceVariant,
+            fontSize: 11,
           ),
         ),
       ],
