@@ -27,6 +27,19 @@ class SpotCheckPage extends ConsumerWidget {
     return AriaScaffold(
       title: 'Check-in singkat',
       subtitle: 'Kenali ritmemu, tanpa penilaian',
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_rounded),
+        tooltip: 'Kembali ke Beranda',
+        padding: const EdgeInsets.only(top: 4),
+        constraints: const BoxConstraints(),
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go(Routes.home);
+          }
+        },
+      ),
       child: overview.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text(failureMessage(error))),

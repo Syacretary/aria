@@ -116,6 +116,19 @@ class _SpotCheckTestPageState extends ConsumerState<SpotCheckTestPage> {
       return AriaScaffold(
         title: 'Check-in singkat',
         subtitle: 'Menyiapkan pertanyaan',
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Kembali',
+          padding: const EdgeInsets.only(top: 4),
+          constraints: const BoxConstraints(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(Routes.spotCheck);
+            }
+          },
+        ),
         child: Center(
           child: _loading
               ? const CircularProgressIndicator()
@@ -139,6 +152,19 @@ class _SpotCheckTestPageState extends ConsumerState<SpotCheckTestPage> {
     return AriaScaffold(
       title: 'Check-in singkat',
       subtitle: 'Pertanyaan ${_index + 1} dari ${_questions.length}',
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_rounded),
+        tooltip: 'Kembali',
+        padding: const EdgeInsets.only(top: 4),
+        constraints: const BoxConstraints(),
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go(Routes.spotCheck);
+          }
+        },
+      ),
       child: SafeArea(
         top: false,
         child: Padding(

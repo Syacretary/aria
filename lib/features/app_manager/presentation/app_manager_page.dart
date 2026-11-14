@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/error/failure.dart';
 import '../../../../core/motion/aria_feedback.dart';
@@ -7,6 +8,7 @@ import '../../../../core/presentation/aria_empty_state.dart';
 import '../../../../core/presentation/aria_loading.dart';
 import '../../../../core/presentation/aria_scaffold.dart';
 import '../../../../core/presentation/aria_section_header.dart';
+import '../../../../core/routing/routes.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/aria_semantic_colors.dart';
@@ -28,6 +30,19 @@ class AppManagerPage extends ConsumerWidget {
     return AriaScaffold(
       title: 'Kelola Aplikasi',
       subtitle: 'Batas pemakaian harian',
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_rounded),
+        tooltip: 'Kembali ke Beranda',
+        padding: const EdgeInsets.only(top: 4),
+        constraints: const BoxConstraints(),
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go(Routes.home);
+          }
+        },
+      ),
       child: apps.when(
         loading: () => const Padding(
           padding: EdgeInsets.all(AppSpacing.pageGutter),
