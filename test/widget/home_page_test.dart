@@ -47,14 +47,14 @@ void main() {
     // The feed is a lazy ListView, so each block has to be scrolled into view
     // before it exists in the tree.
     expect(find.byType(DailySummaryCard), findsOneWidget);
-    await _scrollTo(tester, find.byType(UsagePeriodCard));
-    expect(find.byType(UsagePeriodCard), findsOneWidget);
-
     await _scrollTo(tester, find.byType(AriaMessageCard));
     expect(find.byType(AriaMessageCard), findsOneWidget);
 
     await _scrollTo(tester, find.byType(TodaysWinsCard));
     expect(find.byType(TodaysWinsCard), findsOneWidget);
+
+    await _scrollTo(tester, find.byType(UsagePeriodCard));
+    expect(find.byType(UsagePeriodCard), findsOneWidget);
 
     await _scrollTo(tester, find.byType(SevenDayTrendCard));
     expect(find.byType(SevenDayTrendCard), findsOneWidget);

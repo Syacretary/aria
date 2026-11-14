@@ -20,9 +20,9 @@ import '../../../../core/routing/routes.dart';
 ///
 /// Six blocks, each owning its own loading and error state:
 /// 1. today's video count,
-/// 2. daily/weekly/monthly social opens,
-/// 3. ARIA's message with the "Ngobrol" follow-up,
-/// 4. today's wins,
+/// 2. ARIA's message with the "Ngobrol" follow-up,
+/// 3. today's wins,
+/// 4. daily/weekly/monthly social opens,
 /// 5. the 7-day trend,
 /// 6. top-3 apps by screen time.
 class HomePage extends ConsumerWidget {
@@ -85,9 +85,9 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.xl),
                 const AriaMessageCard(),
                 const SizedBox(height: AppSpacing.cardGap),
-                const UsagePeriodCard(),
-                const SizedBox(height: AppSpacing.cardGap),
                 const TodaysWinsCard(),
+                const SizedBox(height: AppSpacing.cardGap),
+                const UsagePeriodCard(),
                 const SizedBox(height: AppSpacing.cardGap),
                 const SevenDayTrendCard(),
                 const SizedBox(height: AppSpacing.cardGap),

@@ -65,10 +65,10 @@ class HomeRepositoryImpl implements HomeRepository {
 /// Kept as its own class because the chat sheet only needs this narrow
 /// surface, and because it will move to a different backend first.
 class AriaCompanionRepositoryImpl implements AriaCompanionRepository {
-  AriaCompanionRepositoryImpl(this._datasource, this._llm);
+  AriaCompanionRepositoryImpl(this._datasource, [this._llm]);
 
   final HomeDatasource _datasource;
-  final AriaLlmService _llm;
+  final AriaLlmService? _llm;
   final List<Map<String, String>> _conversation = [];
 
   @override
@@ -76,22 +76,30 @@ class AriaCompanionRepositoryImpl implements AriaCompanionRepository {
     final local = HomeMappers.toAriaMessage(
       await _datasource.fetchCurrentMessage(),
     );
-    if (!_llm.enabled) return local;
+    final llm = _llm;
+    if (llm == null || !llm.enabled) return local;
     try {
-      final text = await _llm.reply(
+      final text = await llm.reply(
         'Buat satu pesan singkat untuk beranda berdasarkan konteks pengguna. Pilih saran praktis, apresiasi, atau refleksi yang paling sesuai. Jangan mengulang pesan generik.',
       );
       return _withText(local, text);
     } on Object {
       // Keep Beranda useful if the provider is offline or misconfigured.
+      // Proactive message will still be scheduled using the intelligent local habit message.
+      try {
+        if (llm.proactiveEnabled) {
+          await llm.scheduleProactive(local.text);
+        }
+      } catch (_) {}
       return local;
     }
   });
 
   @override
   Future<Result<AriaMessage>> reply(String userMessage) => _guard(() async {
-    if (_llm.enabled) {
-      final text = await _llm.reply(
+    final llm = _llm;
+    if (llm != null && llm.enabled) {
+      final text = await llm.reply(
         userMessage,
         conversation: List.unmodifiable(_conversation),
       );

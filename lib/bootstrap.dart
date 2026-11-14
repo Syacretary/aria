@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'core/constants/pref_keys.dart';
 import 'core/di/provider_observer.dart';
 import 'core/di/providers.dart';
 
@@ -10,6 +11,14 @@ import 'core/di/providers.dart';
 Future<Widget> bootstrapApp(Widget app) async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+
+  // Turn on ARIA AI and smart proactive messaging by default on first launch.
+  if (!prefs.containsKey(PrefKeys.ariaAiEnabled)) {
+    await prefs.setBool(PrefKeys.ariaAiEnabled, true);
+  }
+  if (!prefs.containsKey(PrefKeys.ariaAiProactive)) {
+    await prefs.setBool(PrefKeys.ariaAiProactive, true);
+  }
 
   final container = ProviderContainer(
     observers: const [AriaProviderObserver()],

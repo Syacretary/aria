@@ -277,8 +277,18 @@ class _ChallengeCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withValues(alpha: .65),
+        color: theme.colorScheme.surfaceContainerLowest,
         borderRadius: AppRadius.shellBorder,
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: .6),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Text(
         visible ? content : '•••••  ·  •••••  ·  ••••',
@@ -286,6 +296,7 @@ class _ChallengeCard extends StatelessWidget {
         style: theme.textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.w700,
           letterSpacing: 1.2,
+          color: theme.colorScheme.primary,
         ),
       ),
     );
@@ -318,13 +329,21 @@ class _AnswerOption extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? theme.colorScheme.primaryContainer
-              : theme.colorScheme.surfaceContainerLow,
+              : theme.colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: selected
                 ? theme.colorScheme.primary
-                : theme.colorScheme.outlineVariant.withValues(alpha: .5),
+                : theme.colorScheme.outlineVariant.withValues(alpha: .6),
           ),
+          boxShadow: [
+            if (!selected)
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+          ],
         ),
         child: Row(
           children: [
@@ -333,6 +352,9 @@ class _AnswerOption extends StatelessWidget {
                   ? Icons.radio_button_checked
                   : Icons.radio_button_unchecked,
               size: 20,
+              color: selected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),

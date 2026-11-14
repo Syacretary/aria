@@ -20,7 +20,8 @@ class AriaLlmService {
     'ARIA_SUPABASE_ANON_KEY',
   );
 
-  bool get enabled => _prefs.getBool(PrefKeys.ariaAiEnabled) ?? false;
+  bool get enabled => _prefs.getBool(PrefKeys.ariaAiEnabled) ?? true;
+  bool get proactiveEnabled => _prefs.getBool(PrefKeys.ariaAiProactive) ?? true;
   bool get gatewayConfigured =>
       Uri.tryParse(_supabaseUrl)?.scheme == 'https' &&
       Uri.tryParse(_supabaseUrl)?.host.isNotEmpty == true &&
@@ -74,8 +75,7 @@ class AriaLlmService {
         throw const FormatException('Balasan ARIA kosong.');
       }
       final result = answer.trim();
-      if (message.startsWith('Buat satu pesan singkat') &&
-          (_prefs.getBool(PrefKeys.ariaAiProactive) ?? false)) {
+      if (message.startsWith('Buat satu pesan singkat') && proactiveEnabled) {
         await _scheduleProactive(result);
       }
       return result;
@@ -174,6 +174,11 @@ class AriaLlmService {
     'scriptural' => 'lembut; gunakan nilai spiritual secara natural tanpa mengasumsikan keyakinan tertentu',
     _ => 'lembut, menenangkan, dan penuh perhatian',
   };
+
+  Future<void> scheduleProactive(String message) async {
+    if (!proactiveEnabled) return;
+    await _scheduleProactive(message);
+  }
 
   Future<void> _scheduleProactive(String message) async {
     final now = DateTime.now();

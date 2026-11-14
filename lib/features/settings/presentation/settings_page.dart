@@ -14,7 +14,6 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/routing/routes.dart';
 import '../../../../core/utils/duration_x.dart';
 import '../../check_ins/data/spot_check_notifications.dart';
-import '../../../core/di/providers.dart';
 import '../domain/entities/app_settings.dart';
 import '../domain/entities/permission_status.dart';
 import 'providers/settings_providers.dart';

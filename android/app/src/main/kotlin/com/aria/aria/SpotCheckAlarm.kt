@@ -136,7 +136,7 @@ internal object AriaProactiveAlarm {
 
     fun rescheduleAfterBoot(context: Context) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean("flutter.aria.ai.proactive", false)) return
+        if (!prefs.getBoolean("flutter.aria.ai.proactive", true)) return
         val message = prefs.getString("flutter.aria.ai.proactive_message", null) ?: return
         val savedTime = prefs.getLong("flutter.aria.ai.proactive_at", 0L)
         val trigger = if (savedTime > System.currentTimeMillis()) savedTime
@@ -147,7 +147,7 @@ internal object AriaProactiveAlarm {
     fun deliver(context: Context) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val message = prefs.getString("flutter.aria.ai.proactive_message", null) ?: return
-        if (!prefs.getBoolean("flutter.aria.ai.proactive", false)) return
+        if (!prefs.getBoolean("flutter.aria.ai.proactive", true)) return
         if (Build.VERSION.SDK_INT >= 33 &&
             context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

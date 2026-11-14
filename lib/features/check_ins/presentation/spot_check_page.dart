@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/error/failure.dart';
 import '../../../core/motion/aria_feedback.dart';
-import '../../../core/motion/aria_tap.dart';
+import '../../../core/presentation/aria_card.dart';
+import '../../../core/presentation/aria_empty_state.dart';
 import '../../../core/presentation/aria_scaffold.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -51,12 +52,8 @@ class _CheckInContent extends ConsumerWidget {
         AppSpacing.huge,
       ),
       children: [
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerLow,
-            borderRadius: AppRadius.shellBorder,
-          ),
+        AriaCard(
+          eyebrow: 'Check-in berkala',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -115,19 +112,13 @@ class _CheckInContent extends ConsumerWidget {
           const SizedBox(height: AppSpacing.md),
         ],
         if (sessions.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: theme.colorScheme.outlineVariant.withValues(alpha: .5),
-              ),
-              borderRadius: AppRadius.shellBorder,
-            ),
-            child: Text(
-              'Check-in yang selesai akan muncul di sini. Jawabanmu hanya tersimpan di perangkat ini.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+          const AriaCard(
+            child: AriaEmptyState(
+              compact: true,
+              icon: Icons.spa_outlined,
+              title: 'Belum ada check-in tersimpan',
+              message:
+                  'Check-in yang selesai akan muncul di sini. Jawabanmu hanya tersimpan di perangkat ini.',
             ),
           )
         else
@@ -166,12 +157,8 @@ class _SelfRatingTrend extends StatelessWidget {
         : previous - current >= 1
         ? 'Belakangan terasa lebih berat; perhatikan apa yang mungkin membantu'
         : 'Kesanmu relatif serupa di check-in terakhir';
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withValues(alpha: .35),
-        borderRadius: AppRadius.shellBorder,
-      ),
+    return AriaCard(
+      eyebrow: 'Tren pribadi',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -187,7 +174,7 @@ class _SelfRatingTrend extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5),
                     child: Container(
-                      height: 12 + session.wellbeingLevel! * 8,
+                      height: 14 + session.wellbeingLevel! * 8,
                       decoration: BoxDecoration(
                         color: theme.colorScheme.primary.withValues(
                           alpha: .35 + session.wellbeingLevel! * .1,
@@ -220,12 +207,8 @@ class _ReminderCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: AppRadius.shellBorder,
-      ),
+    return AriaCard(
+      eyebrow: 'Pengingat berkala',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -392,12 +375,8 @@ class _SessionTile extends StatelessWidget {
     final rating = session.answers
         .where((answer) => answer.promptId == 'wellbeing')
         .firstOrNull;
-    return Container(
+    return AriaCard(
       padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
       child: Row(
         children: [
           Icon(
