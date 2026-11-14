@@ -151,6 +151,7 @@ class HomePage extends ConsumerWidget {
               ),
             ),
           ),
+        ),
         ],
       ),
     );
