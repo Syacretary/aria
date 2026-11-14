@@ -24,6 +24,8 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final greeting = ref.watch(_greetingProvider);
     final theme = Theme.of(context);
+    final topInset = MediaQuery.of(context).padding.top;
+    final topPadding = topInset + 48 + AppSpacing.xl;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -36,6 +38,7 @@ class HomePage extends ConsumerWidget {
             child: _WelcomeLightCircle(),
           ),
           RefreshIndicator(
+            edgeOffset: topInset + 48,
             onRefresh: () async {
               ref
                 ..invalidate(dailySummaryProvider)
@@ -47,9 +50,9 @@ class HomePage extends ConsumerWidget {
               await Future<void>.delayed(const Duration(milliseconds: 250));
             },
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(
+              padding: EdgeInsets.fromLTRB(
                 AppSpacing.pageGutter,
-                AppSpacing.lg + 48,
+                topPadding,
                 AppSpacing.pageGutter,
                 AppSpacing.huge,
               ),
@@ -101,13 +104,26 @@ class HomePage extends ConsumerWidget {
             top: 0,
             left: 0,
             right: 0,
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  height: 48,
-                  child: Row(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    theme.scaffoldBackgroundColor.withValues(alpha: 0.94),
+                    theme.scaffoldBackgroundColor.withValues(alpha: 0.72),
+                    theme.scaffoldBackgroundColor.withValues(alpha: 0.0),
+                  ],
+                  stops: const [0.0, 0.65, 1.0],
+                ),
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                  child: SizedBox(
+                    height: 48,
+                    child: Row(
                     children: [
                       _HeaderAction(
                         icon: Icons.workspace_premium_outlined,
