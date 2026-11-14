@@ -6,54 +6,196 @@
 
 ---
 
-## 1. Latar Belakang & Mengapa ARIA Dibutuhkan (The Problem & Use Case)
+## 👥 Informasi Tim & Kompetisi
 
-### Krisis *Doomscrolling* di Era Perhatian *(Attention Economy)*
-Di era media sosial modern (TikTok, Instagram Reels, YouTube Shorts), antarmuka dirancang dengan *frictionless infinite scroll* dan algoritma prediktif berbasis *variable reward schedule*. Mekanisme ini mengeksploitasi refleks dopamin manusia, memicu kondisi *trance* digital di mana pengguna kehilangan kendali waktu dan kesadaran (*dissociative scrolling*). Dampaknya nyata: penurunan rentang atensi (*attention span*), kelelahan mental, kecemasan (*FOMO*), dan penurunan kualitas tidur serta produktivitas.
-
-### Pendekatan Sebagian Besar App Blocker Konvensional (Yang Sering Gagal)
-Aplikasi pengontrol waktu layar konvensional umumnya bersandar pada **restriksi keras (punitive blocking)**: memblokir total aplikasi dengan password, mengunci layar, atau mempermalukan pengguna (*guilt-tripping*). Penelitian dan pengalaman membuktikan pendekatan represif ini sering memicu resistensi pengguna (*reactance theory*): pengguna akhirnya menghapus izin atau meng-uninstall aplikasi karena merasa dihakimi dan dikekang.
-
-### Mengapa ARIA Berbeda: Genre *Healthy Wellbeing* & *Mindful Friction*
-ARIA hadir bukan sebagai "penjara digital", melainkan sebagai **pendamping sadar (*mindful companion*)**. Filosofi ARIA berpusat pada:
-1. **Mindful Friction (Friksi Berkesadaran)**: Alih-alih langsung memblokir paksa, ARIA menyisipkan jeda napas (*breathing pause*) dan pertanyaan reflektif saat pengguna membuka aplikasi sosial media atau saat batas waktu tercapai. Friksi beberapa detik ini mengaktifkan kembali korteks prafrontal (*prefrontal cortex*) sehingga pengguna membuat keputusan sadar: apakah benar-benar butuh lanjut, atau lebih baik menutup aplikasi.
-2. **Refleksi Tanpa Penghakiman**: ARIA menyapa dengan nada hangat (*gentle/firm/playful/scriptural*) dan merayakan langkah kecil (*Today's Wins*), bukan mencela durasi scroll.
-3. **Penyadaran Waktu Nyata di Tempat (*On-The-Spot Awareness*)**: Melalui *Floating Island* yang melayang lembut tanpa menghalangi pandangan, pengguna selalu memiliki "cermin waktu" yang memperlihatkan berapa video yang sudah dilewati.
-4. **Gamifikasi Berbasis Usaha Positif**: Menghargai kemauan pengguna untuk berhenti sejenak, keluar dari aplikasi dalam 60 detik (*intentional exit*), atau menurunkan durasi konsumsi.
+* **Kategori**: Mobile App — Digital Well-being
+* **Nama Aplikasi**: **ARIA** *(Mindful Digital Wellbeing Companion)*
+* **Nama Tim**: **Besok Maju Upacara**
+* **Daftar Anggota**:
+  1. **Muhammad Rasya Putra**
+  2. **Athaya Mirza Calief**
+  3. **Syahmirza Azka Ramadhan**
 
 ---
 
-## 2. Fitur-Fitur Utama
+## 💡 Masalah, Solusi, & Target Pengguna
 
-* **Floating Island (Hitungan Video Mengambang)**:
-  Overlay mengambang non-intrusif dan non-touchable di area notification bar yang menghitung estimasi jumlah konten video yang telah digulir saat membuka aplikasi sosial media (Instagram, YouTube, TikTok). Pada milestone tertentu (misal 20, 40, 60 video), pulau ini menampilkan pesan jeda singkat.
-* **Beranda Berisi Wawasan Komprehensif**:
-  * **Ringkasan Harian (Daily Summary)**: Total perkiraan video digulir, frekuensi membuka aplikasi (*social opens*), dan waktu pemakaian dibanding hari sebelumnya.
-  * **Tren Frekuensi Membuka Aplikasi (1 Hari, 1 Minggu, 1 Bulan)**: Menampilkan frekuensi pembukaan media sosial secara periodik beserta rasio perubahan (*delta ratio*).
-  * **Tren 7 Hari (Weekly Trend Chart)**: Grafik batang visual screen time harian dibandingkan garis target yang ditentukan pengguna.
-  * **Top 3 Aplikasi Sosial**: Waktu pakai dan frekuensi membuka aplikasi sosial media teratas.
-  * **Kemenangan Hari Ini (Today's Wins)**: Penghargaan otomatis berbasis aturan lokal ketika pengguna berhasil menurunkan screen time, mengurangi frekuensi buka, atau tetap di bawah target harian.
-* **AI Penasihat Digital (ARIA AI Companion)**:
-  * Widget kartu dinamis di beranda yang memberikan saran, apresiasi, atau pertanyaan reflektif berdasarkan perbandingan tren penggunaan.
-  * Fitur **Ngobrol Langsung (`/beranda/ngobrol`)** untuk dialog pendampingan reflektif tanpa penghakiman.
-  * Opsi pengingat proaktif terjadwal yang dikirimkan ke perangkat pengguna.
-* **Perjalanan & Gamifikasi (Halaman Pencapaian / Level Journey)**:
-  * Pelacakan progres kebiasaan dalam 5 level bertingkat: *Self-control* (kembali dalam 60 detik), *Menjaga batas* (sesuai target), *Hari lebih ringan* (penurunan durasi ≥ 10 menit), *Keluar dengan sadar*, dan *Menyelesaikan jeda napas*.
-* **Refleksi & Tes Fokus Spontan (Spot Check / Check-in Singkat)**:
-  * Tes berkala (default mingguan) berisi 5 pertanyaan: evaluasi perasaan (*wellbeing rating*), pertanyaan reflektif kontekstual berdasarkan tren, mini latihan fokus visual, dan uji memori kerja.
-  * Riwayat ditampilkan dalam bentuk visual grafik batang tren perasaan pribadi.
-* **Pengelola Aplikasi & Batas Waktu (App Manager)**:
-  * Penyetelan kuota harian per aplikasi dengan opsi penegakan (*enforcement*): Pantau saja (*Track Only*), Peringatan notifikasi (*Warn*), Jeda napas reflektif (*Breathe* / 15 detik), atau Kembali ke Beranda (*Block*).
-  * Pengingat saat aplikasi baru dibuka (*Remind on open* / jeda 8 detik).
+### 1. Masalah yang Diangkat (The Problem)
+Di era media sosial modern (TikTok, Instagram Reels, YouTube Shorts), antarmuka dirancang dengan *frictionless infinite scroll* dan algoritma prediktif berbasis *variable reward schedule*. Mekanisme ini mengeksploitasi refleks dopamin manusia, memicu kondisi *trance* digital di mana pengguna kehilangan kendali waktu dan kesadaran (*dissociative scrolling* / *doomscrolling*).
+
+Dampaknya nyata:
+* Penurunan rentang atensi (*attention span*) dan fokus kerja/belajar.
+* Kelelahan mental (*cognitive fatigue*) dan gangguan kecemasan (*FOMO*).
+* Penurunan kualitas tidur serta produktivitas harian.
+
+**Kelemahan App Blocker Konvensional**:  
+Sebagian besar aplikasi pengontrol waktu layar bersandar pada **restriksi keras (punitive blocking)** seperti memblokir paksa dengan password atau mempermalukan pengguna (*guilt-tripping*). Pendekatan represif ini terbukti sering memicu resistensi pengguna (*reactance theory*): pengguna merasa dihakimi, kesal, lalu mencabut izin atau meng-uninstall aplikasi.
+
+### 2. Solusi yang Ditawarkan (The Solution)
+ARIA hadir bukan sebagai "penjara digital", melainkan sebagai **pendamping sadar (*mindful companion*)** yang memulihkan agensi pengguna melalui empat pilar:
+1. **Mindful Friction (Friksi Berkesadaran)**: Menyisipkan jeda napas (*breathing pause*) dan pertanyaan reflektif saat pengguna membuka aplikasi sosial media atau saat kuota harian tercapai. Friksi beberapa detik ini mengaktifkan kembali korteks prafrontal (*prefrontal cortex*) agar pengguna membuat keputusan secara sadar.
+2. **Penyadaran Waktu Nyata di Tempat (*On-The-Spot Awareness*)**: Melalui *Floating Island* non-intrusif di status bar yang menampilkan hitungan video yang telah digulir secara langsung di atas aplikasi target.
+3. **Refleksi Empatik Tanpa Penghakiman**: ARIA menyapa dengan nada hangat (*gentle, firm, playful, scriptural*) dan merayakan langkah kecil (*Today's Wins*), bukan mencela durasi pemakaian.
+4. **Gamifikasi Berbasis Usaha Positif**: Mengapresiasi kebiasaan baik seperti keluar dari aplikasi dalam 60 detik (*intentional exit*), menyelesaikan jeda napas, atau menurunkan durasi konsumsi harian.
+
+### 3. Target Pengguna (Target Audience)
+* **Pelajar & Mahasiswa**: Yang sering terjebak maraton scroll video di sela-sela waktu belajar atau menjelang tidur.
+* **Pekerja Kreatif & Profesional Digital**: Yang membutuhkan pemeliharaan fokus tinggi (*deep work*) namun rentan terdistraksi media sosial saat membuka smartphone.
+* **Gen Z & Milenial**: Pengguna aktif media sosial berbasis video pendek yang ingin mengontrol kebiasaan digital secara mandiri tanpa merasa dihakimi atau dikekang.
 
 ---
 
-## ⚡ Panduan Instalasi & Aktivasi Izin (Penting)
+## 🚀 Fitur Utama yang Berhasil Diimplementasikan
 
-Bagi pengguna yang menginstal file APK rilis secara langsung (*sideload*), ikuti 2 panduan singkat berikut agar aplikasi terinstal dan seluruh fitur deteksi berfungsi normal:
+| Fitur | Status | Deskripsi & Implementasi Teknis |
+| :--- | :---: | :--- |
+| **Floating Island (Hitungan Video Mengambang)** | ✅ **Selesai** | Overlay mengambang non-intrusif dan *non-touchable* di notification bar (`WindowManager`). Menghitung perkiraan konten video pendek yang digulir saat membuka Instagram, YouTube, dan TikTok secara *real-time*. Pada milestone tertentu (misal: 20 video), menampilkan pesan jeda singkat. |
+| **Daily Summary Card (Live Animated Gradient)** | ✅ **Selesai** | Kartu headline utama beranda dengan latar belakang gradasi dinamis (*cyclic golden amber to warm cream*). Menampilkan ringkasan video digulir, screen time sosial, dan frekuensi buka aplikasi. |
+| **Multi-Period Social Opens Trend** | ✅ **Selesai** | Analisis perbandingan frekuensi membuka media sosial dalam interval 1 Hari, 1 Minggu, dan 1 Bulan beserta rasio perubahan (*delta ratio*). |
+| **Grafik Tren 7 Hari (Weekly Trend Chart)** | ✅ **Selesai** | Visualisasi grafik batang waktu pemakaian harian dibandingkan batas target harian pengguna. |
+| **Kemenangan Hari Ini (Today's Wins)** | ✅ **Selesai** | Mesin aturan lokal yang secara otomatis memberikan lencana apresiasi saat pengguna berhasil mengurangi screen time, menjaga batas, atau menekan frekuensi buka. |
+| **ARIA AI Companion & Konsultasi Dialog** | ✅ **Selesai** | Dialog reflektif interaktif (`/beranda/ngobrol`) berbasis AI empatik, didukung kartu pesan refleksi harian di beranda dan opsi pengingat proaktif terjadwal. |
+| **Pengelola Aplikasi (App Manager)** | ✅ **Selesai** | Penyetelan kuota harian per aplikasi dengan 4 mode penegakan (*Track Only*, *Warn*, *Breathe* 15 detik, *Block*) serta opsi pengingat friksi 8 detik saat aplikasi baru dibuka. |
+| **Level Journey & Gamifikasi (Pencapaian)** | ✅ **Selesai** | Pelacakan progres kebiasaan dalam 5 kategori bertingkat: *Self-control*, *Menjaga batas*, *Hari lebih ringan*, *Keluar dengan sadar*, dan *Menyelesaikan jeda napas*. |
+| **Refleksi & Tes Fokus Spontan (Spot Check)** | ✅ **Selesai** | Evaluasi berkala yang memicu notifikasi tes fokus visual, memori kerja, dan rating perasaan pribadi dengan grafik riwayat tren emosional. |
+| **Visual Permission Onboarding (3-Second Rule)** | ✅ **Selesai** | Antarmuka *first-launch onboarding* berbasis visual intuitif yang memandu perizinan sistem esensial secara bertahap tanpa teks bertele-tele. |
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+### 1. Client-Side (Mobile App)
+* **Framework**: Flutter 3.24+ (Dart SDK `^3.13.7`)
+* **Platform Native**: Android SDK (Kotlin, API Level 26–35 / Android 8.0 s/d 15)
+* **State Management & Dependency Injection**: `flutter_riverpod` (^3.5.0)
+* **Routing & Deep Linking**: `go_router` (^18.1.3)
+* **Penyimpanan Lokal (Persistence)**:
+  * `shared_preferences` (^2.5.3) untuk preferensi aplikasi dan snapshot agregat harian (retensi 35 hari).
+  * `AriaSecureStore.kt` berbasis **Android Keystore hardware-backed encryption (AES-GCM 128-bit)** untuk menyimpan kredensial sesi anonim secara aman.
+* **Pemodelan Data & Immutability**: `freezed_annotation`, `json_annotation`, `build_runner`
+* **Formatting & Lokalisasi**: `intl`, `flutter_localizations`
+* **Linting & Code Quality**: `flutter_lints`, `custom_lint` (dengan modul aturan privat `aria_lint`)
+
+### 2. Native Android Integration (Low-Level APIs)
+* **`AccessibilityService` (`AriaScrollAccessibilityService.kt`)**: Deteksi event gulir layar (`TYPE_VIEW_SCROLLED`) dan siklus hidup aplikasi video pendek target.
+* **`WindowManager` (System Alert Window)**: Rendering overlay *Floating Island* dan kartu intervensi jeda napas di atas aplikasi lain.
+* **`UsageStatsManager`**: Agregasi durasi waktu layar (*foreground time*) dan frekuensi peluncuran aplikasi (*app opens*).
+* **`AlarmManager` & `BroadcastReceiver`**: Penjadwalan tes fokus berkala (*Spot Check*) dan notifikasi pengingat proaktif persisten pasca-reboot.
+
+### 3. Backend & Cloud Infrastructure
+* **BaaS / Serverless**: Supabase
+* **Serverless Functions**: Supabase Edge Functions (Deno / TypeScript) untuk AI Zero-Trust Gateway.
+* **Database & Vault**: Supabase PostgreSQL dengan integrasi `Supabase Vault` untuk menyimpan API Key LLM secara terisolasi dari aplikasi klien.
+* **AI Engine**: Google Gemini API / OpenAI-compatible LLM endpoint yang diproxy melalui Edge Function aman.
+
+---
+
+## 🏗️ Arsitektur Sistem & Alur Data
+
+### 1. Diagram Arsitektur (Clean Architecture & Feature-First)
+
+```mermaid
+graph TD
+    subgraph UI_Layer["Presentation Layer (Flutter)"]
+        UI_Home["Beranda & DailySummaryCard"]
+        UI_Chat["CompanionChatPage (/beranda/ngobrol)"]
+        UI_Manager["AppManager & LimitEditorSheet"]
+        UI_Achieve["AchievementsPage (Gamifikasi)"]
+        UI_CheckIn["SpotCheckPage & Test (Refleksi)"]
+    end
+
+    subgraph State_Layer["State & DI (Riverpod)"]
+        Prov_Home["HomeProviders"]
+        Prov_App["AppManagerProviders"]
+        Prov_Companion["AriaCompanionRepositoryProvider"]
+        Prov_Spot["SpotCheckProviders"]
+    end
+
+    subgraph Domain_Layer["Domain Layer (Entities & Use Cases)"]
+        Ent_Summary["DailySummary & PeriodStats"]
+        Ent_Limit["AppLimit & LimitEnforcement"]
+        Ent_Achieve["AchievementProgressStore"]
+        Ent_Spot["SpotCheckModels & QuestionBank"]
+    end
+
+    subgraph Data_Layer["Data Layer (Repositories & Sources)"]
+        Repo_Usage["UsageTrackingHomeDatasource"]
+        Repo_LLM["AriaLlmService"]
+        Store_Prefs["SharedPreferences (Local 35-day Data)"]
+    end
+
+    subgraph Native_Layer["Android Native Layer (Kotlin MethodChannel)"]
+        Native_Usage["UsageStatsManager (Waktu Layar)"]
+        Native_Access["AriaScrollAccessibilityService (Scroll Tracker)"]
+        Native_Overlay["WindowManager (Floating Island & Jeda)"]
+        Native_Alarm["AlarmManager (SpotCheck & Proaktif)"]
+        Native_Secure["AriaSecureStore (Keystore AES-GCM)"]
+    end
+
+    subgraph Cloud_Layer["Cloud Gateway (Supabase Zero-Trust)"]
+        Edge_Func["Edge Function: aria-chat (JWT Auth & Rate Limit)"]
+        Vault["Supabase Vault (API Key Terisolasi)"]
+        LLM_API["Google Gemini / LLM Provider"]
+    end
+
+    %% Hubungan
+    UI_Layer --> State_Layer
+    State_Layer --> Domain_Layer
+    Domain_Layer --> Data_Layer
+    Data_Layer --> Store_Prefs
+    Data_Layer --> Native_Layer
+    Repo_LLM --> Edge_Func
+    Edge_Func --> Vault
+    Edge_Func --> LLM_API
+```
+
+---
+
+### 2. Diagram Alur Data (Data Flow)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Pengguna
+    participant Social as Aplikasi Video (IG/YT/TikTok)
+    participant Native as Accessibility & UsageStats
+    participant LocalStore as SharedPreferences & Keystore
+    participant UI as Flutter Dashboard (ARIA)
+    participant Gateway as Supabase Edge Function
+    participant LLM as Google Gemini / AI Provider
+
+    Note over User, Social: 1. Sesi Berselancar Sosmed
+    User->>Social: Membuka aplikasi sosmed & scroll video
+    Native->>Native: Deteksi TYPE_VIEW_SCROLLED & hitung video
+    Native-->>Social: Tampilkan Floating Island (Hitungan video realtime)
+    
+    Note over Native, LocalStore: 2. Agregasi Lokal
+    Native->>LocalStore: Simpan snapshot harian, event buka, & durasi
+    
+    Note over User, UI: 3. Interaksi Dashboard
+    User->>UI: Membuka Beranda ARIA
+    UI->>LocalStore: Ambil ringkasan hari ini & tren multi-periode
+    LocalStore-->>UI: Data agregat (Durasi, Opens, Wins)
+    UI-->>User: Tampilkan DailySummaryCard (Live Gradient) & Today's Wins
+
+    Note over User, LLM: 4. Konsultasi AI (Zero-Trust)
+    User->>UI: Kirim pesan di dialog reflektif (/beranda/ngobrol)
+    UI->>Gateway: POST /aria-chat (Pesan + Konteks Agregat Habit, No PII)
+    Gateway->>Gateway: Validasi JWT Anonim & Rate Limit
+    Gateway->>LLM: Prompt sistem ARIA + Konteks habit
+    LLM-->>Gateway: Respons empatik & reflektif
+    Gateway-->>UI: Pesan pendampingan ramah
+    UI-->>User: Tampilkan jawaban ARIA tanpa penghakiman
+```
+
+---
+
+## ⚡ Panduan Instalasi & Aktivasi Izin
+
+Bagi pengguna yang menginstal file APK rilis secara langsung (*sideload*), ikuti panduan berikut agar aplikasi terinstal dan seluruh fitur deteksi berfungsi optimal:
 
 ### 1. Melewati Peringatan Google Play Protect saat Install
-Karena file APK diunduh langsung dari GitHub (bukan melalui Play Store), Play Protect akan memunculkan peringatan pemblokiran:
+Karena file APK diunduh langsung dari GitHub Releases (bukan dari Google Play Store), Play Protect akan memunculkan peringatan pemblokiran:
 1. Saat pop-up peringatan Play Protect muncul, **jangan** tekan "Oke".
 2. Ketuk **"Detail selengkapnya"** *(More details)*.
 3. Ketuk **"Tetap instal"** *(Install anyway)*.
@@ -68,58 +210,9 @@ Android 13+ secara otomatis mengunci (*grayed out*) tombol Aksesibilitas untuk a
 
 ---
 
-## 3. Cara Menggunakan ARIA
+## 🔒 Daftar Izin Sistem (Permissions) & Justifikasi
 
-```
-[ Instal & Buka ARIA ] ──> [ Berikan Izin di Pengaturan ] ──> [ Tetapkan Target Waktu ]
-          │                                                               │
-          ▼                                                               ▼
-[ Buka Sosial Media ] ◄──────────────────────────────────────── [ Pantau di Beranda ]
-   ├── Floating Island menghitung video                                   │
-   ├── Prompt reflektif saat membuka (opsional)                           ├── Today's Wins & Tren
-   └── Jeda napas saat kuota tercapai                                     ├── Konsultasi AI (Ngobrol)
-                                                                          └── Tes Fokus Spontan
-```
-
-1. **Inisialisasi & Pengaturan Izin**:
-   * Buka menu **Pengaturan (`/pengaturan`) > Izin Sistem**.
-   * Aktifkan izin wajib: **Akses Penggunaan (Usage Access)**, **Layanan Aksesibilitas (Pelacak Scroll ARIA)**, dan **Tampilkan di Atas Aplikasi Lain (Overlay)**.
-   * Aktifkan izin pendukung: **Notifikasi** (untuk pengingat jeda & check-in) dan **Pengecualian Hemat Baterai** (agar alarm refleksi tidak tertidur oleh OS).
-2. **Menentukan Batas Aplikasi**:
-   * Masuk ke tab **Kelola (`/kelola`)**.
-   * Pilih aplikasi sosial media yang terinstal (Instagram, YouTube, TikTok, dll.).
-   * Tentukan kuota harian (misal: 45 menit) dan mode penegakan (disarankan: *Jeda napas*).
-   * Aktifkan *Pengingat saat dibuka* jika ingin friksi sadar 8 detik sebelum mulai berselancar.
-3. **Berselancar dengan Sadar**:
-   * Saat membuka aplikasi target, *Floating Island* akan otomatis muncul di bagian tengah atas notification bar.
-   * Angka akan bertambah sesuai scroll yang dilakukan. Jika mencapai angka milestone (misal 20 video), pulau akan menampilkan pengingat lembut.
-   * Jika kuota harian tercapai, kartu intervensi jeda napas akan muncul selama 15 detik untuk memberi Anda waktu menimbang apakah ingin menyudahi sesi.
-4. **Melihat Refleksi & Merayakan Kemajuan**:
-   * Buka tab **Beranda (`/beranda`)** untuk melihat ringkasan harian, kemenangan hari ini (*Today's Wins*), dan pesan harian dari AI ARIA.
-   * Ketuk ikon piala di kiri atas untuk membuka **Pencapaian (`/pencapaian`)** dan melihat kenaikan level perjalanan sadar Anda.
-   * Saat notifikasi refleksi mingguan masuk, ketuk notifikasi untuk mengisi **Check-in Singkat (`/refleksi`)** dan uji fokus Anda.
-
----
-
-## 4. Keamanan, Privasi, & Pemrosesan Data Aman
-
-ARIA dibangun dengan prinsip **Privacy by Design** dan **Local-First Processing**:
-
-| Komponen | Mekanisme Perlindungan Privasi |
-| :--- | :--- |
-| **Pelacakan Scroll (Accessibility Service)** | **Zero Text & Content Scraping**. Layanan aksesibilitas ARIA disetel khusus (`importantForAccessibility = NO`) dan hanya membaca metadata gerakan (`TYPE_VIEW_SCROLLED`, scroll delta, pager index) pada aplikasi target terpilih. ARIA **tidak pernah** membaca teks layar, teks postingan, komentar, username, sandi, atau konten visual. |
-| **Statistik Penggunaan (UsageStats)** | ARIA hanya membaca durasi foreground agregat dan jumlah event activity resumed. Data mentah OS tidak pernah diunggah ke internet; ARIA mengagregasikannya ke dalam snapshot harian yang disimpan secara lokal di `SharedPreferences` selama maksimal 35 hari. |
-| **Jawaban Refleksi & Tes Fokus** | Disimpan 100% secara lokal di dalam memori internal perangkat. Tidak ada transmisi ke server cloud mana pun. |
-| **Penyimpanan Kredensial di Klien** | Menggunakan `AriaSecureStore` berbasis **Android Keystore hardware-backed encryption (AES-GCM 128-bit)** untuk menyimpan token sesi otentikasi anonim. Tidak ada plaintext token yang tersimpan di disk. |
-| **Arsitektur AI Zero-Trust Gateway** | Aplikasi mobile **tidak pernah menyimpan provider API Key** (OpenAI/DeepSeek/dsb). Semua panggilan AI disalurkan melalui Supabase Edge Function (`aria-chat`) terotentikasi JWT anonim. API key disimpan di Supabase Database Vault. Konteks yang dikirim ke AI hanyalah teks pesan chat dan ringkasan agregat habit (contoh: *"Rata-rata 45 menit/hari, tren menurun"*), tanpa rincian aplikasi atau identitas pengguna (*No PII*). |
-
----
-
-## 5. Daftar Izin Sistem (Permissions) & Justifikasi
-
-Aplikasi meminta izin spesifik berikut di Android:
-
-| Izin Android | Tingkat | Alasan & Fungsi |
+| Izin Android | Kategori | Alasan & Fungsi |
 | :--- | :--- | :--- |
 | `android.permission.PACKAGE_USAGE_STATS` | *Special Access* | Membaca total waktu pemakaian harian dan frekuensi membuka aplikasi sosial media melalui Android `UsageStatsManager`. |
 | `android.permission.SYSTEM_ALERT_WINDOW` | *Special Access* | Menampilkan *Floating Island* (indikator jumlah scroll) dan kartu jeda napas (*intervention pause card*) mengambang di atas aplikasi target. |
@@ -131,115 +224,107 @@ Aplikasi meminta izin spesifik berikut di Android:
 
 ---
 
-## 6. Struktur Arsitektur Aplikasi
+## 🤖 Dokumentasi Penggunaan AI (ARIA AI Companion)
 
-ARIA menerapkan arsitektur gabungan **Clean Architecture** dan **Feature-First modularity**, dikombinasikan dengan **Flutter Riverpod** untuk reaktivitas state dan **GoRouter** untuk deklarasi navigasi.
+### 1. Peran AI dalam Aplikasi
+AI pada ARIA berfungsi sebagai **penasihat digital yang empatik dan suportif**, bukan pengambil keputusan otomatis atau sistem penilai moral. AI bertugas:
+* Memberikan pesan reflektif harian di kartu beranda berdasarkan tren penggunaan (apresiasi saat waktu layar turun, dukungan ramah saat waktu layar naik).
+* Menjadi rekan dialog di halaman `/beranda/ngobrol` untuk berdiskusi santai mengenai kecemasan digital, pemicu scrolling, dan strategi jeda napas.
+* Menghasilkan pesan notifikasi proaktif yang personal dan menenangkan.
 
-```
-ARIA/
-├── android/app/src/main/kotlin/com/aria/aria/
-│   ├── MainActivity.kt                      # Bridge MethodChannel untuk stats, permissions, app list, & alarms
-│   ├── AriaScrollAccessibilityService.kt    # Service background pengukur scroll, Floating Island, & overlay jeda
-│   ├── SpotCheckAlarm.kt                    # AlarmManager & BroadcastReceiver untuk refleksi spontan/berkala
-│   └── AriaSecureStore.kt                   # Enkripsi sesi lokal berbasis Android Keystore (AES-GCM)
-│
-├── lib/
-│   ├── core/                                # Pondasi lintas fitur
-│   │   ├── companion/                       # Definisi kepribadian & tone ARIA (gentle, firm, playful, scriptural)
-│   │   ├── config/                          # AppConfig & FeatureFlags
-│   │   ├── constants/                       # Konstanta aset, kunci preferensi lokal (PrefKeys)
-│   │   ├── di/                              # Root Riverpod provider & observer
-│   │   ├── error/                           # Abstraksi Result, Failure, & Exception
-│   │   ├── motion/                          # Haptics, motion tokens, micro-interactions
-│   │   ├── presentation/                    # Reusable atom UI (AriaScaffold, AriaCard, AriaBarChart, dsb.)
-│   │   ├── routing/                         # GoRouter konfigurasi & ShellScaffold beranda
-│   │   └── theme/                           # Sistem warna semantik (AppColors), tipografi, & tema terang/gelap
-│   │
-│   ├── features/                            # Modul fungsional berorientasi Clean Architecture
-│   │   ├── home/                            # Fitur Beranda & AI Companion
-│   │   │   ├── domain/                      # Entities (DailySummary, AriaMessage, PeriodStats), Repositories, Use Cases
-│   │   │   ├── data/                        # DTOs, Mappers, Datasources (UsageTrackingHomeDatasource), AriaLlmService
-│   │   │   └── presentation/                # UI widgets (DailySummaryCard, UsagePeriodCard, SevenDayTrendCard, NgobrolSheet)
-│   │   │
-│   │   ├── app_manager/                     # Fitur Pengelola Batas Aplikasi (App Manager)
-│   │   │   ├── domain/                      # Entitas AppLimit, LimitEnforcement (trackOnly, warn, breathe, block)
-│   │   │   ├── data/                        # Repositories & UsageStatsAndroidSource
-│   │   │   └── presentation/                # AppManagerPage, LimitEditorSheet, AppUsageRing
-│   │   │
-│   │   ├── achievements/                    # Fitur Level & Gamifikasi Perjalanan
-│   │   │   ├── data/                        # AchievementProgressStore (menghitung progres 5 kategori)
-│   │   │   └── presentation/                # AchievementsPage (Visual level, lencana, & progress bar)
-│   │   │
-│   │   ├── check_ins/                       # Fitur Refleksi & Tes Fokus Spontan (Spot Check)
-│   │   │   ├── domain/                      # SpotCheckModels & SpotCheckQuestionBank (refleksi, fokus, memori)
-│   │   │   ├── data/                        # SpotCheckStore & SpotCheckNotifications
-│   │   │   └── presentation/                # SpotCheckPage (riwayat tren perasaan) & SpotCheckTestPage (antarmuka tes)
-│   │   │
-│   │   ├── usage_tracking/                  # Domain logika pelacakan & snapshot harian
-│   │   │   ├── domain/                      # SocialApps catalogue, TodaysWinGenerator, ScrollSessionTracker
-│   │   │   ├── data/                        # DailyUsageStore (retensi 35 hari snapshot lokal)
-│   │   │   └── presentation/                # VideoSessionIsland (widget in-app tracking)
-│   │   │
-│   │   └── settings/                        # Pengaturan sistem, izin, & preferensi AI
-│   │       ├── domain/                      # PermissionStatus, AppSettings
-│   │       ├── data/                        # PermissionAndroidSource
-│   │       └── presentation/                # SettingsPage, AriaAiSettingsPage
-│   │
-│   ├── app.dart                             # Widget akar aplikasi (AriaApp)
-│   ├── bootstrap.dart                       # Inisialisasi asynchronous awal & splash fallback
-│   └── main.dart                            # Titik masuk Flutter (entry point)
-│
-└── supabase/                                # Infrastruktur Serverless Cloud Gateway
-    ├── functions/aria-chat/index.ts         # Edge function otentikasi JWT, rate limiting, & proxy ke LLM
-    └── migrations/                          # Skrip SQL untuk schema privat & integrasi Vault
-```
+### 2. Arsitektur AI Zero-Trust Gateway
+Untuk menjamin keamanan dan kerahasiaan:
+* **Tidak Ada API Key di Aplikasi Klien**: File APK ARIA **sama sekali tidak menyimpan API key** provider AI (Google Gemini / OpenAI). 
+* **Otentikasi Anonim via Supabase**: Klien berkomunikasi dengan endpoint Supabase Edge Function (`aria-chat`) menggunakan token sesi JWT anonim yang disimpan di hardware Android Keystore.
+* **Isolasi Database Vault**: API key LLM disimpan di dalam `Supabase Vault` di sisi server.
+* **Rate Limiting**: Pemanggilan AI dibatasi secara terpusat (maksimal 20 permintaan per jendela waktu) melalui fungsi SQL `consume_aria_request_limit` untuk mencegah penyalahgunaan kuota.
+
+### 3. Perlindungan Privasi (Zero PII & Data Minimization)
+Data yang dikirimkan ke model AI **hanya** berupa:
+* Teks pertanyaan yang diketik pengguna di kolom chat.
+* Ringkasan agregat kebiasaan anonim (contoh: *"Rata-rata 45 menit/hari, tren menurun 15%"*).
+* Pilihan nada komunikasi yang diinginkan pengguna (*lembut, tegas, santai, atau reflektif*).
+
+> [!IMPORTANT]
+> ARIA **tidak pernah** mengirimkan teks ketikan layar, pesan pribadi, konten postingan video, daftar seluruh aplikasi pengguna, atau identitas pribadi (*No PII*) ke model AI.
+
+### 4. Mode Mandiri (Local Offline Fallback)
+Jika koneksi internet mati atau gateway AI belum dikonfigurasi, ARIA tetap berfungsi 100% normal. Mesin aturan lokal (`TodaysWinGenerator` dan `AriaMessage`) otomatis mengambil alih untuk memproduksi apresiasi dan analisis tren berbasis logika matematis internal tanpa memerlukan koneksi server.
 
 ---
 
-## 7. Checklist Analisis Implementasi Fitur
+## 💻 Panduan Menjalankan & Membangun dari Source Code
 
-Tabel berikut menganalisis kesesuaian antara ikhtisar fitur yang direncanakan dengan implementasi riil pada repositori:
+### Prasyarat Pengembangan
+* **Flutter SDK**: Versi `3.24.0` atau yang lebih baru.
+* **Dart SDK**: Versi `^3.13.7`.
+* **Android SDK**: Compile SDK 34 / 35, Min SDK 24 (disarankan Min SDK 26).
+* **Perangkat Fisik Android**: Sangat disarankan perangkat fisik asli untuk menguji *Accessibility Service*, *UsageStats*, dan overlay *Floating Island*.
 
-| Spesifikasi Fitur | Status | Detail Implementasi & Catatan Kode |
-| :--- | :---: | :--- |
-| **Floating Island Jumlah Scroll**<br>Muncul saat membuka sosmed, posisi mengapung tepat di tengah notification bar. | ✅ **Sudah** | Diimplementasikan di `AriaScrollAccessibilityService.kt` (`ensureIsland()` & `showIsland()`). Menggunakan overlay `WindowManager` dengan `Gravity.TOP or Gravity.CENTER_HORIZONTAL; y = 6dp`, non-touchable, menampilkan counter `${session}x` dan pesan reflektif di milestone tertentu. Didukung juga widget in-app `VideoSessionIsland.dart`. |
-| **Tren Frekuensi Membuka Sosmed (Beranda)**<br>Frekuensi membuka sosmed dalam kurun waktu 1 hari, 1 minggu, dan 1 bulan. | ✅ **Sudah** | Diimplementasikan di `UsagePeriodCard.dart` yang didukung `UsageTrackingHomeDatasource.dart` (`fetchPeriodBreakdown()`). Menampilkan tab tersegmentasi Harian, Mingguan, dan Bulanan dengan hitungan frekuensi pembukaan (*social opens*) dan perbandingan tren. |
-| **UI AI Penasihat Dinamis (Beranda)**<br>Pesan saran, apresiasi, refleksi berbasis perbandingan hari sebelumnya vs saat ini. | ✅ **Sudah** | Diimplementasikan di `AriaMessageCard.dart` dan `AriaCompanionRepositoryImpl.dart`. Memiliki fallback aturan lokal (membandingkan perbedaan waktu layar dengan hari kemarin untuk apresiasi/refleksi) serta integrasi LLM dinamis via `AriaLlmService.dart` yang mengirimkan konteks arah tren. |
-| **Halaman Level/Journey & Gamifikasi**<br>Menunjukkan perjalanan/usaha mengurangi sosmed dengan rewarding saat frekuensi/durasi menurun. | ✅ **Sudah** | Diimplementasikan di `AchievementsPage.dart` (`/pencapaian`, dapat diakses dari header Beranda). Memiliki 5 kategori pencapaian (masing-masing 5 level) termasuk *"Hari lebih ringan"* yang memberi reward saat screen time berkurang ≥ 10 menit dari hari sebelumnya. Di beranda juga didukung kartu `TodaysWinsCard.dart`. |
-| **Halaman Tes Self-Rating Fokus Spontan**<br>Tes spontan berupa pertanyaan atau tes fokus, hasil ditampilkan sebagai grafik/tren pribadi. | ✅ **Sudah** | Diimplementasikan di `SpotCheckPage.dart` (`/refleksi`) dan `SpotCheckTestPage.dart` (`/refleksi/tes`). Menguji wellbeing, refleksi, fokus visual (menghitung simbol/angka genap), dan ingatan kata. Hasil tersimpan lokal dan dirender dalam grafik tren batang `_SelfRatingTrend`. Dijadwalkan otomatis melalui `SpotCheckAlarm.kt`. |
-| **AI Konsultan & Nasihat Proaktif**<br>Konsultasi proaktif berdasarkan kebiasaan pengguna. | ✅ **Sudah** | Tersedia dialog interaktif di `CompanionChatPage.dart` (`/beranda/ngobrol`) dan sistem penjadwalan pesan proaktif harian via `AriaProactiveAlarm` & `AriaProactiveReceiver`. |
-| **Sistem Gamifikasi/Rewarding**<br>Menghargai usaha pengguna dalam mengurangi konsumsi. | ✅ **Sudah** | Mesin aturan lokal `TodaysWinGenerator.dart` mendeteksi kemenangan harian secara otomatis, dan `AchievementProgressStore.dart` mengakumulasikan poin untuk membuka level dan lencana baru. |
-| **Tes Mingguan Spontan untuk Self-Rating Fokus** | ✅ **Sudah** | Dikelola oleh alarm latar belakang `SpotCheckAlarm.kt` dengan interval default 7 hari (mingguan) yang memicu notifikasi acak menuju rute `/refleksi`. |
+### 1. Kloning Repositori & Instal Dependensi
+```bash
+git clone https://github.com/Syacretary/aria.git
+cd aria
+flutter pub get
+```
+
+### 2. Konfigurasi Variabel Lingkungan (`.env`)
+Salin berkas konfigurasi template:
+```bash
+cp .env.example .env
+```
+Buka file `.env` dan sesuaikan nilainya:
+```ini
+# URL Proyek Supabase
+ARIA_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+
+# Kunci Anonim Publik Supabase
+ARIA_SUPABASE_ANON_KEY=YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY
+```
+
+### 3. Konfigurasi Release Keystore (Opsional untuk Rilis Resmi)
+Untuk menandatangani APK rilis menggunakan sertifikat pribadi:
+1. Buat berkas `android/key.properties`:
+   ```ini
+   storePassword=password_keystore_anda
+   keyPassword=password_key_anda
+   keyAlias=aria
+   storeFile=key.jks
+   ```
+2. Letakkan berkas sertifikat `key.jks` di dalam direktori `android/`.
+
+### 4. Menjalankan Mode Debug di Perangkat
+```bash
+flutter run
+```
+
+### 5. Membangun APK Rilis
+```bash
+flutter build apk --release --dart-define-from-file=.env
+```
+File APK siap instal akan berada di `build/app/outputs/flutter-apk/app-release.apk`.
 
 ---
 
-## 8. Panduan Menjalankan & Membangun Aplikasi
+## 📜 Atribusi, Aset, & Lisensi Pihak Ketiga
 
-### Prasyarat
-* Flutter SDK (3.24+ disarankan)
-* Android SDK (API Level 26 ke atas; compileSdkVersion 34+)
-* Perangkat fisik Android (disarankan untuk menguji *UsageStats*, *Accessibility Service*, dan *System Alert Window*)
+Proyek ARIA dibangun dengan memanfaatkan pustaka dan aset berlisensi terbuka berikut:
 
-### Langkah Instalasi
-1. Gandakan repositori dan masuk ke direktori:
-   ```bash
-   git clone <repo_url>
-   cd ARIA
-   ```
-2. Pasang dependensi Flutter:
-   ```bash
-   flutter pub get
-   ```
-3. Konfigurasi Environment (Opsional untuk Fitur AI Companion):
-   Salin `.env.example` ke `.env` dan masukkan kredensial Supabase Anda:
-   ```bash
-   cp .env.example .env
-   ```
-4. Jalankan aplikasi pada perangkat Android:
-   ```bash
-   flutter run
-   ```
-5. Untuk kompilasi APK rilis dengan dart-define:
-   ```bash
-   flutter build apk --release --dart-define-from-file=.env
-   ```
+* **Tipografi**:
+  * **Plus Jakarta Sans** oleh Gumpita Rahayu / Tokotype. Dilisensikan di bawah [SIL Open Font License 1.1](file:///home/syacretary/Projects/mobileapp/ARIA/assets/fonts/PlusJakartaSans-LICENSE.txt). Aset font disematkan langsung di dalam repositori (`assets/fonts/`) agar rendering deterministik tanpa ketergantungan koneksi internet.
+* **Ikonografi & Visual**:
+  * **Cupertino Icons & Material Design Icons** oleh Google / Flutter Team.
+  * **Aset Tutorial Izin**: Tangkapan layar panduan visual izin (`assets/permissions/`) diproduksi secara orisinal oleh tim pengembang ARIA.
+  * **App Icon Adaptif**: Dihasilkan dan diolah secara orisinal menjadi aset Android Adaptive Icon (`mipmap-*/ic_launcher`).
+* **Pustaka Open Source**:
+  * `flutter_riverpod` (MIT License) oleh Remi Rousselet.
+  * `go_router` (BSD-3-Clause) oleh Flutter Team.
+  * `freezed` & `json_serializable` (MIT License).
+  * `shared_preferences` (BSD-3-Clause).
+  * `supabase-js` (MIT License).
+
+---
+
+<p align="center">
+  Dibuat dengan kesadaran penuh oleh <strong>Tim Besok Maju Upacara</strong> © 2026.
+</p>
