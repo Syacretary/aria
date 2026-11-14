@@ -163,9 +163,10 @@ class AriaScrollAccessibilityService : AccessibilityService() {
                 } else {
                     removeIntervention()
                 }
-                if (previous != packageName && limit?.remindOnOpen == true && intervention == null) {
-                    showOpenReminder(packageName)
-                }
+                // Fitur "Ingatkan saat dibuka" (jeda 8 detik) dinonaktifkan sementara karena pop-up belum stabil.
+                // if (previous != packageName && limit?.remindOnOpen == true && intervention == null) {
+                //     showOpenReminder(packageName)
+                // }
             }
             AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
                 if (!supportedPackages.contains(packageName) || !isDistinctScroll(event, packageName)) return

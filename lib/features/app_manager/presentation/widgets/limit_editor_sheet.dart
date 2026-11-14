@@ -256,16 +256,17 @@ class _LimitEditorSheetState extends State<LimitEditorSheet> {
                     ],
                   ),
 
-                  SwitchListTile.adaptive(
-                    contentPadding: EdgeInsets.zero,
-                    value: _remindOnOpen,
-                    onChanged: (value) => setState(() => _remindOnOpen = value),
-                    title: const Text('Ingatkan saat dibuka'),
-                    subtitle: const Text(
-                      'Jeda 8 detik untuk memilih dengan sadar',
-                    ),
-                    secondary: const Icon(Icons.mark_chat_unread_outlined),
-                  ),
+                  // Fitur "Ingatkan saat dibuka" (jeda 8 detik) disembunyikan sementara dari UI.
+                  // SwitchListTile.adaptive(
+                  //   contentPadding: EdgeInsets.zero,
+                  //   value: _remindOnOpen,
+                  //   onChanged: (value) => setState(() => _remindOnOpen = value),
+                  //   title: const Text('Ingatkan saat dibuka'),
+                  //   subtitle: const Text(
+                  //     'Jeda 8 detik untuk memilih dengan sadar',
+                  //   ),
+                  //   secondary: const Icon(Icons.mark_chat_unread_outlined),
+                  // ),
                 ],
               ),
             ),
