@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/constants/asset_paths.dart';
 import '../../../../core/constants/pref_keys.dart';
-import '../../../../core/motion/aria_feedback.dart';
 import '../../../../core/motion/aria_haptics.dart';
 import '../../../../core/motion/aria_sheet.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -15,116 +14,77 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/permission_status.dart';
 import '../providers/settings_providers.dart';
 
-/// One step in the permission onboarding workflow.
-class _PermissionStepData {
-  const _PermissionStepData({
+// ── Data ─────────────────────────────────────────────────────────────────────
+
+class _Step {
+  const _Step({
     required this.permission,
-    required this.title,
-    required this.subtitle,
-    required this.rationale,
-    required this.steps,
+    required this.icon,
+    required this.label,
+    required this.caption,
     required this.screenshots,
-    this.restrictedSettingTip,
-    this.primaryActionLabel = 'Buka Pengaturan',
+    required this.actionLabel,
+    this.restrictedNote,
   });
 
   final AppPermission permission;
-  final String title;
-  final String subtitle;
-  final String rationale;
-  final List<String> steps;
+  final IconData icon;
+  final String label;      // ≤ 4 kata
+  final String caption;    // 1 kalimat manfaat
   final List<String> screenshots;
-  final String? restrictedSettingTip;
-  final String primaryActionLabel;
+  final String actionLabel;
+  final String? restrictedNote; // hanya jika perlu warning
 }
 
-const _kSteps = <_PermissionStepData>[
-  _PermissionStepData(
+const _steps = <_Step>[
+  _Step(
     permission: AppPermission.usageAccess,
-    title: 'Akses Data Pemakaian',
-    subtitle: 'Wajib untuk menghitung screen time',
-    rationale:
-        'Diperlukan agar ARIA dapat mengukur waktu pemakaian dan frekuensi membuka aplikasi sosial media secara lokal tanpa mengirimkan data ke internet.',
-    steps: [
-      'Ketuk tombol "Buka Pengaturan" di bawah.',
-      'Cari dan pilih aplikasi "aria" dari daftar.',
-      'Aktifkan switch "Izinkan akses penggunaan" / "Permit usage access".',
-    ],
-    screenshots: [
-      AssetPaths.permUsageAccess1,
-      AssetPaths.permUsageAccess2,
-    ],
-    primaryActionLabel: 'Buka Pengaturan',
+    icon: Icons.bar_chart_rounded,
+    label: 'Akses Screen Time',
+    caption: 'Menghitung waktu pemakaian & frekuensi buka aplikasi.',
+    screenshots: [AssetPaths.permUsageAccess1, AssetPaths.permUsageAccess2],
+    actionLabel: 'Izinkan',
   ),
-  _PermissionStepData(
+  _Step(
     permission: AppPermission.scrollDetection,
-    title: 'Deteksi Scroll Video',
-    subtitle: 'Wajib untuk Floating Island',
-    rationale:
-        'ARIA menghitung perkiraan video yang dilewati (TikTok, Reels, Shorts) murni dari sensor gerakan layar (Zero Content Scraping). ARIA tidak pernah membaca teks, postingan, atau percakapan Anda.',
-    restrictedSettingTip:
-        'Penting di Android 13/14/15: Jika tombol abu-abu ("Setelan dibatasi"), ketuk tombol "Buka Info Aplikasi" di bawah ➔ tap ikon titik tiga (⋮) di pojok kanan atas ➔ pilih "Izinkan setelan terbatas".',
-    steps: [
-      'Di menu Aksesibilitas, pilih "Aplikasi yang didownload" / "Downloaded apps".',
-      'Pilih "ARIA pelacak scroll".',
-      'Nyalakan toggle "ARIA pelacak scroll".',
-    ],
-    screenshots: [
-      AssetPaths.permScroll1,
-      AssetPaths.permScroll2,
-      AssetPaths.permScroll3,
-    ],
-    primaryActionLabel: 'Buka Aksesibilitas',
+    icon: Icons.swipe_up_rounded,
+    label: 'Deteksi Scroll Video',
+    caption: 'Menghitung video yang dilewati — tanpa membaca isi layar.',
+    screenshots: [AssetPaths.permScroll1, AssetPaths.permScroll2, AssetPaths.permScroll3],
+    actionLabel: 'Izinkan',
+    restrictedNote:
+        'Tombol abu-abu? Buka Info Aplikasi → ⋮ → "Izinkan setelan terbatas".',
   ),
-  _PermissionStepData(
+  _Step(
     permission: AppPermission.overlay,
-    title: 'Tampil di Atas Aplikasi Lain',
-    subtitle: 'Wajib untuk pulau pengingat video',
-    rationale:
-        'Menampilkan Floating Island (counter video mengambang) di sudut atas layar saat Anda berselancar di media sosial agar Anda selalu memiliki cermin waktu.',
-    steps: [
-      'Ketuk tombol "Buka Pengaturan" di bawah.',
-      'Cari dan pilih aplikasi "aria".',
-      'Aktifkan "Izinkan ditampilkan di atas aplikasi lain".',
-    ],
-    screenshots: [
-      AssetPaths.permDisplayOverApps1,
-      AssetPaths.permDisplayOverApps2,
-    ],
-    primaryActionLabel: 'Buka Pengaturan',
+    icon: Icons.picture_in_picture_rounded,
+    label: 'Tampil di Atas Aplikasi',
+    caption: 'Floating Island muncul di atas video — tidak menghalangi layar.',
+    screenshots: [AssetPaths.permDisplayOverApps1, AssetPaths.permDisplayOverApps2],
+    actionLabel: 'Izinkan',
   ),
-  _PermissionStepData(
+  _Step(
     permission: AppPermission.batteryExemption,
-    title: 'Jalankan di Latar Belakang',
-    subtitle: 'Dukungan akurasi & kestabilan',
-    rationale:
-        'Mencegah sistem Android menghentikan ARIA saat layar mati atau saat Anda berpindah antar aplikasi sehingga limit dan pengingat selalu tepat waktu.',
-    steps: [
-      'Ketuk tombol "Minta Izin" di bawah.',
-      'Pada dialog sistem yang muncul, pilih "Izinkan" / "Allow".',
-    ],
-    screenshots: [
-      AssetPaths.permBackground,
-    ],
-    primaryActionLabel: 'Minta Izin',
+    icon: Icons.battery_charging_full_rounded,
+    label: 'Latar Belakang',
+    caption: 'Limit & pengingat tetap aktif walau layar mati.',
+    screenshots: [AssetPaths.permBackground],
+    actionLabel: 'Izinkan',
   ),
 ];
 
-/// Interactive visual permission onboarding flow that guides the user
-/// step-by-step through granting permissions with real screenshots.
+// ── Sheet entry-point ─────────────────────────────────────────────────────────
+
 class PermissionOnboardingSheet extends ConsumerStatefulWidget {
   const PermissionOnboardingSheet({super.key});
 
-  /// Opens the onboarding sheet as a bottom sheet.
-  static Future<void> show(BuildContext context) async {
-    await AriaSheet.show<void>(
-      context: context,
-      isDismissible: true,
-      enableDrag: true,
-      maxHeightFactor: 0.94,
-      builder: (_) => const PermissionOnboardingSheet(),
-    );
-  }
+  static Future<void> show(BuildContext context) => AriaSheet.show<void>(
+        context: context,
+        isDismissible: true,
+        enableDrag: true,
+        maxHeightFactor: 0.92,
+        builder: (_) => const PermissionOnboardingSheet(),
+      );
 
   @override
   ConsumerState<PermissionOnboardingSheet> createState() =>
@@ -134,20 +94,20 @@ class PermissionOnboardingSheet extends ConsumerStatefulWidget {
 class _PermissionOnboardingSheetState
     extends ConsumerState<PermissionOnboardingSheet>
     with WidgetsBindingObserver {
-  late final PageController _pageController;
-  int _currentIndex = 0;
+  late final PageController _page;
+  int _idx = 0;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
+    _page = PageController();
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _pageController.dispose();
+    _page.dispose();
     super.dispose();
   }
 
@@ -158,53 +118,39 @@ class _PermissionOnboardingSheetState
     }
   }
 
-  Future<void> _completeOnboarding() async {
+  Future<void> _done() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(PrefKeys.permissionOnboardingCompleted, true);
-    if (mounted) {
-      Navigator.of(context).pop();
+    if (mounted) Navigator.of(context).pop();
+  }
+
+  Future<void> _next() async {
+    if (_idx < _steps.length - 1) {
+      await _page.animateToPage(
+        _idx + 1,
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      await _done();
     }
   }
 
-  Future<void> _requestCurrentPermission(AppPermission permission) async {
+  Future<void> _request(_Step step) async {
     unawaited(AriaHaptics.tap());
-    final result = await ref.read(checkPermissionsProvider).request(permission);
-    if (!mounted) return;
-
+    final result = await ref.read(checkPermissionsProvider).request(step.permission);
     result.when(
-      ok: (_) {
-        ref.invalidate(permissionStatesProvider);
-      },
-      err: (failure) {
-        AriaFeedback.warning(context, failure.message);
-      },
+      ok: (_) => ref.invalidate(permissionStatesProvider),
+      err: (_) {},
     );
-  }
-
-  Future<void> _openAppInfo() async {
-    unawaited(AriaHaptics.tap());
-    // Trigger Settings.ACTION_APPLICATION_DETAILS_SETTINGS via channel
-    final repo = ref.read(permissionSourceProvider);
-    try {
-      await repo.request(AppPermission.scrollDetection); // fallback
-    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isLight = theme.brightness == Brightness.light;
-    final permissionsAsync = ref.watch(permissionStatesProvider);
-    final states = permissionsAsync.value ?? const {};
-
-    final currentStep = _kSteps[_currentIndex];
-    final isCurrentGranted =
-        states[currentStep.permission] == PermissionState.granted;
-
-    // Check if all essential permissions are granted
-    final allGranted = _kSteps.every(
-      (s) => states[s.permission] == PermissionState.granted,
-    );
+    final states = ref.watch(permissionStatesProvider).value ?? const {};
+    final allDone = _steps.every((s) => states[s.permission] == PermissionState.granted);
 
     return Container(
       decoration: BoxDecoration(
@@ -215,199 +161,82 @@ class _PermissionOnboardingSheetState
         top: false,
         child: Column(
           children: [
-            // Handle bar
+            // ── Handle + skip ───────────────────────────────────────────────
             const SizedBox(height: AppSpacing.sm),
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-                  borderRadius: AppRadius.pill,
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-
-            // Top Header: Title & Step indicators
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.pageGutter,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Aktivasi Izin ARIA',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Langkah ${_currentIndex + 1} dari ${_kSteps.length}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: _completeOnboarding,
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                _Handle(),
+                Positioned(
+                  right: AppSpacing.pageGutter,
+                  child: TextButton(
+                    onPressed: _done,
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                      ),
+                          horizontal: AppSpacing.sm, vertical: 4),
                       visualDensity: VisualDensity.compact,
                     ),
                     child: Text(
-                      allGranted ? 'Selesai' : 'Nanti saja',
+                      allDone ? 'Selesai' : 'Lewati',
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+            const SizedBox(height: AppSpacing.sm),
 
-            // Stepper pills
+            // ── Step pill indicators ────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.pageGutter,
-                AppSpacing.sm,
-                AppSpacing.pageGutter,
-                AppSpacing.md,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.pageGutter),
               child: Row(
                 children: [
-                  for (int i = 0; i < _kSteps.length; i++) ...[
+                  for (int i = 0; i < _steps.length; i++) ...[
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          _pageController.animateToPage(
-                            i,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: _StepPill(
-                          index: i,
-                          currentIndex: _currentIndex,
-                          isGranted: states[_kSteps[i].permission] ==
-                              PermissionState.granted,
-                        ),
+                      child: _PillIndicator(
+                        active: i == _idx,
+                        done: states[_steps[i].permission] == PermissionState.granted,
                       ),
                     ),
-                    if (i < _kSteps.length - 1)
-                      const SizedBox(width: AppSpacing.xs),
+                    if (i < _steps.length - 1) const SizedBox(width: 6),
                   ],
                 ],
               ),
             ),
 
-            const Divider(height: 1, thickness: 0.5),
-
-            // Step Content PageView
+            // ── Page content ────────────────────────────────────────────────
             Expanded(
               child: PageView.builder(
-                controller: _pageController,
-                itemCount: _kSteps.length,
-                onPageChanged: (index) {
-                  setState(() => _currentIndex = index);
-                },
-                itemBuilder: (context, index) {
-                  final step = _kSteps[index];
-                  final isGranted =
-                      states[step.permission] == PermissionState.granted;
-                  return _StepContent(
+                controller: _page,
+                itemCount: _steps.length,
+                onPageChanged: (i) => setState(() => _idx = i),
+                itemBuilder: (_, i) {
+                  final step = _steps[i];
+                  final granted = states[step.permission] == PermissionState.granted;
+                  return _StepCard(
                     step: step,
-                    isGranted: isGranted,
-                    onRequest: () => _requestCurrentPermission(step.permission),
-                    onOpenAppInfo: _openAppInfo,
+                    granted: granted,
+                    onRequest: () => _request(step),
                   );
                 },
               ),
             ),
 
-            const Divider(height: 1, thickness: 0.5),
-
-            // Bottom Navigation & Actions
+            // ── Bottom action ───────────────────────────────────────────────
             Padding(
-              padding: const EdgeInsets.all(AppSpacing.pageGutter),
-              child: Row(
-                children: [
-                  if (_currentIndex > 0) ...[
-                    OutlinedButton(
-                      onPressed: () {
-                        _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.lg,
-                          vertical: AppSpacing.md,
-                        ),
-                      ),
-                      child: const Text('Sebelumnya'),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                  ],
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: () {
-                        if (!isCurrentGranted) {
-                          _requestCurrentPermission(currentStep.permission);
-                        } else if (_currentIndex < _kSteps.length - 1) {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        } else {
-                          _completeOnboarding();
-                        }
-                      },
-                      style: FilledButton.styleFrom(
-                        backgroundColor: isCurrentGranted
-                            ? AppColors.win
-                            : theme.colorScheme.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppSpacing.md,
-                        ),
-                      ),
-                      icon: Icon(
-                        isCurrentGranted
-                            ? (_currentIndex < _kSteps.length - 1
-                                ? Icons.arrow_forward
-                                : Icons.check)
-                            : Icons.lock_open,
-                        size: 18,
-                      ),
-                      label: Text(
-                        isCurrentGranted
-                            ? (_currentIndex < _kSteps.length - 1
-                                ? 'Izin Aktif — Lanjut'
-                                : 'Selesai & Masuk')
-                            : currentStep.primaryActionLabel,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.pageGutter, 0,
+                AppSpacing.pageGutter, AppSpacing.lg,
+              ),
+              child: _BottomBar(
+                step: _steps[_idx],
+                granted: states[_steps[_idx].permission] == PermissionState.granted,
+                isLast: _idx == _steps.length - 1,
+                onRequest: () => _request(_steps[_idx]),
+                onNext: _next,
+                onDone: _done,
               ),
             ),
           ],
@@ -417,215 +246,140 @@ class _PermissionOnboardingSheetState
   }
 }
 
-/// Pill indicator for one step in the stepper.
-class _StepPill extends StatelessWidget {
-  const _StepPill({
-    required this.index,
-    required this.currentIndex,
-    required this.isGranted,
-  });
+// ── Handle ────────────────────────────────────────────────────────────────────
 
-  final int index;
-  final int currentIndex;
-  final bool isGranted;
-
+class _Handle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isSelected = index == currentIndex;
-
-    final color = isGranted
-        ? AppColors.win
-        : (isSelected
-            ? theme.colorScheme.primary
-            : theme.colorScheme.onSurface.withValues(alpha: 0.15));
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      height: 6,
+    return Container(
+      width: 36,
+      height: 4,
       decoration: BoxDecoration(
-        color: color,
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15),
         borderRadius: AppRadius.pill,
       ),
     );
   }
 }
 
-/// Detailed content of a single permission step.
-class _StepContent extends StatelessWidget {
-  const _StepContent({
+// ── Pill indicator ────────────────────────────────────────────────────────────
+
+class _PillIndicator extends StatelessWidget {
+  const _PillIndicator({required this.active, required this.done});
+  final bool active;
+  final bool done;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = done
+        ? AppColors.win
+        : active
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.12);
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      height: 5,
+      decoration: BoxDecoration(color: color, borderRadius: AppRadius.pill),
+    );
+  }
+}
+
+// ── Step card — the main visual content ───────────────────────────────────────
+
+class _StepCard extends StatelessWidget {
+  const _StepCard({
     required this.step,
-    required this.isGranted,
+    required this.granted,
     required this.onRequest,
-    required this.onOpenAppInfo,
   });
 
-  final _PermissionStepData step;
-  final bool isGranted;
+  final _Step step;
+  final bool granted;
   final VoidCallback onRequest;
-  final VoidCallback onOpenAppInfo;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isLight = theme.brightness == Brightness.light;
 
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.pageGutter),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.pageGutter, AppSpacing.md,
+        AppSpacing.pageGutter, AppSpacing.sm,
+      ),
       children: [
-        // Title & status badge
+        // ── Icon + Label + Status in one glanceable row ───────────────────
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: granted
+                    ? const Color(0xFFE8F5E9)
+                    : theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+              ),
+              child: Icon(
+                granted ? Icons.check_rounded : step.icon,
+                size: 26,
+                color: granted
+                    ? const Color(0xFF2E7D32)
+                    : theme.colorScheme.onPrimaryContainer,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    step.title,
+                    step.label,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    step.subtitle,
+                    granted ? 'Sudah aktif ✓' : step.caption,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: granted
+                          ? const Color(0xFF2E7D32)
+                          : theme.colorScheme.onSurfaceVariant,
+                      height: 1.4,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: AppSpacing.sm),
-            _StatusBadge(isGranted: isGranted),
           ],
         ),
 
-        const SizedBox(height: AppSpacing.md),
-
-        // Rationale card (Why ARIA needs it)
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: isLight
-                ? AppColors.paper.withValues(alpha: 0.8)
-                : AppColors.espressoRaised,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(
-              color: isLight
-                  ? const Color(0x1F9A783E)
-                  : const Color(0x2E7FA99C),
-            ),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.privacy_tip_outlined,
-                size: 20,
-                color: isLight ? AppColors.sage : AppColors.sageSoft,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  step.rationale,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    height: 1.45,
-                    color: isLight ? AppColors.ink : AppColors.inkLight,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Restricted Setting Warning (for Android 13/14/15 accessibility)
-        if (step.restrictedSettingTip != null && !isGranted) ...[
-          const SizedBox(height: AppSpacing.sm),
+        // ── Restricted warning — only for accessibility on Android 13+ ────
+        if (step.restrictedNote != null && !granted) ...[
+          const SizedBox(height: AppSpacing.md),
           Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md, vertical: AppSpacing.sm),
             decoration: BoxDecoration(
-              color: isLight
-                  ? const Color(0xFFFFF7E6)
-                  : const Color(0xFF332717),
+              color: const Color(0xFFFFF8E6),
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(
-                color: const Color(0xFFD4A038).withValues(alpha: 0.5),
-              ),
+              border: Border.all(color: const Color(0xFFFFCC80)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.warning_amber_rounded,
-                      size: 18,
-                      color: Color(0xFFB08A47),
-                    ),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      'Tombol Abu-abu? (Setelan Dibatasi)',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFFB08A47),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  step.restrictedSettingTip!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    height: 1.4,
-                    fontSize: 12,
-                    color: isLight ? AppColors.ink : AppColors.inkLight,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-
-        const SizedBox(height: AppSpacing.lg),
-
-        // Tutorial Steps
-        Text(
-          'Cara Mengaktifkan:',
-          style: theme.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        for (int i = 0; i < step.steps.length; i++) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 3),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '${i + 1}',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.colorScheme.onPrimaryContainer,
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
+                const Icon(Icons.info_outline_rounded,
+                    size: 16, color: Color(0xFFB08A47)),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    step.steps[i],
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    step.restrictedNote!,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: const Color(0xFF7A5C1E),
                       height: 1.4,
                     ),
                   ),
@@ -637,195 +391,63 @@ class _StepContent extends StatelessWidget {
 
         const SizedBox(height: AppSpacing.lg),
 
-        // Visual Screenshots Section
-        Row(
-          children: [
-            Text(
-              'Panduan Tampilan UI:',
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const Spacer(),
-            Text(
-              'Ketuk gambar untuk memperbesar',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontSize: 11,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-
-        // Horizontal Gallery of Screenshots
+        // ── Screenshots — full visual, horizontal swipeable ───────────────
         SizedBox(
-          height: 190,
+          height: 240,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
             itemCount: step.screenshots.length,
-            separatorBuilder: (context, index) =>
-                const SizedBox(width: AppSpacing.sm),
-            itemBuilder: (context, index) {
-              final path = step.screenshots[index];
-              return _ScreenshotThumbnail(
-                assetPath: path,
-                stepNumber: index + 1,
-                totalSteps: step.screenshots.length,
-              );
-            },
+            separatorBuilder: (context, index) => const SizedBox(width: AppSpacing.sm),
+            itemBuilder: (context, i) => _Screenshot(path: step.screenshots[i]),
           ),
         ),
 
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.sm),
+        // hint to swipe if more than 1
+        if (step.screenshots.length > 1)
+          Center(
+            child: Text(
+              'Geser untuk lihat selanjutnya →',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
       ],
     );
   }
 }
 
-/// Status badge showing whether the permission is granted or missing.
-class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.isGranted});
+// ── Screenshot thumbnail with tap-to-fullscreen ───────────────────────────────
 
-  final bool isGranted;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    if (isGranted) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: const Color(0xFFE8F5E9),
-          borderRadius: AppRadius.pill,
-          border: Border.all(color: const Color(0xFF81C784)),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.check_circle, size: 14, color: Color(0xFF2E7D32)),
-            SizedBox(width: 4),
-            Text(
-              'Sudah Aktif',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF2E7D32),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF3E0),
-        borderRadius: AppRadius.pill,
-        border: Border.all(color: const Color(0xFFFFB74D)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.radio_button_unchecked,
-            size: 14,
-            color: theme.colorScheme.primary,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            'Belum Aktif',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Thumbnail of a permission tutorial screenshot with tap-to-zoom support.
-class _ScreenshotThumbnail extends StatelessWidget {
-  const _ScreenshotThumbnail({
-    required this.assetPath,
-    required this.stepNumber,
-    required this.totalSteps,
-  });
-
-  final String assetPath;
-  final int stepNumber;
-  final int totalSteps;
+class _Screenshot extends StatelessWidget {
+  const _Screenshot({required this.path});
+  final String path;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         unawaited(AriaHaptics.tap());
-        Navigator.of(context).push(
+        Navigator.push(
+          context,
           MaterialPageRoute<void>(
-            builder: (_) => _FullScreenImageViewer(assetPath: assetPath),
+            builder: (_) => _FullScreen(path: path),
           ),
         );
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
-          child: Stack(
-            children: [
-              Image.asset(
-                assetPath,
-                fit: BoxFit.cover,
-                width: 160,
-                height: 190,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 160,
-                  height: 190,
-                  color: Colors.grey.shade200,
-                  child: const Center(
-                    child: Icon(Icons.broken_image, color: Colors.grey),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 6,
-                right: 6,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.65),
-                    borderRadius: AppRadius.pill,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.zoom_in, color: Colors.white, size: 12),
-                      const SizedBox(width: 2),
-                      Text(
-                        '$stepNumber/$totalSteps',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+        child: Image.asset(
+          path,
+          fit: BoxFit.cover,
+          height: 240,
+          errorBuilder: (context, error, stack) => Container(
+            width: 140,
+            height: 240,
+            color: Colors.grey.shade200,
+            child: const Icon(Icons.broken_image, color: Colors.grey),
           ),
         ),
       ),
@@ -833,11 +455,9 @@ class _ScreenshotThumbnail extends StatelessWidget {
   }
 }
 
-/// Fullscreen zoomable image viewer for inspecting UI screenshot details.
-class _FullScreenImageViewer extends StatelessWidget {
-  const _FullScreenImageViewer({required this.assetPath});
-
-  final String assetPath;
+class _FullScreen extends StatelessWidget {
+  const _FullScreen({required this.path});
+  final String path;
 
   @override
   Widget build(BuildContext context) {
@@ -846,18 +466,85 @@ class _FullScreenImageViewer extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
-          'Panduan Tampilan',
-          style: TextStyle(color: Colors.white, fontSize: 16),
-        ),
       ),
       body: Center(
         child: InteractiveViewer(
-          minScale: 0.8,
-          maxScale: 4.0,
-          child: Image.asset(assetPath, fit: BoxFit.contain),
+          maxScale: 4,
+          child: Image.asset(path, fit: BoxFit.contain),
         ),
       ),
+    );
+  }
+}
+
+// ── Bottom action bar ─────────────────────────────────────────────────────────
+
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({
+    required this.step,
+    required this.granted,
+    required this.isLast,
+    required this.onRequest,
+    required this.onNext,
+    required this.onDone,
+  });
+
+  final _Step step;
+  final bool granted;
+  final bool isLast;
+  final VoidCallback onRequest;
+  final VoidCallback onNext;
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    if (granted) {
+      // Already granted → show Next / Done
+      return FilledButton.icon(
+        onPressed: isLast ? onDone : onNext,
+        icon: Icon(isLast ? Icons.check_rounded : Icons.arrow_forward_rounded,
+            size: 18),
+        label: Text(isLast ? 'Mulai Gunakan ARIA' : 'Lanjut'),
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.win,
+          minimumSize: const Size(double.infinity, 52),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+          ),
+        ),
+      );
+    }
+
+    // Not granted → primary CTA = request, secondary = skip step
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FilledButton.icon(
+          onPressed: onRequest,
+          icon: const Icon(Icons.lock_open_rounded, size: 18),
+          label: Text(step.actionLabel),
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(double.infinity, 52),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        TextButton(
+          onPressed: isLast ? onDone : onNext,
+          style: TextButton.styleFrom(
+            minimumSize: const Size(double.infinity, 36),
+            foregroundColor: theme.colorScheme.onSurfaceVariant,
+          ),
+          child: Text(
+            isLast ? 'Nanti saja' : 'Lewati langkah ini',
+            style: const TextStyle(fontSize: 13),
+          ),
+        ),
+      ],
     );
   }
 }
