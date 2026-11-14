@@ -37,6 +37,12 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Keystore & secrets
+*.jks
+*.keystore
+key.properties
+android/key.properties
+
 # Symbolication related
 app.*.symbols
 
