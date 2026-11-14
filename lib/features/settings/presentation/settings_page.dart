@@ -10,8 +10,8 @@ import '../../../../core/motion/aria_feedback.dart';
 import '../../../../core/motion/aria_sheet.dart';
 import '../../../../core/presentation/aria_loading.dart';
 import '../../../../core/presentation/aria_scaffold.dart';
-import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/routing/routes.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/utils/duration_x.dart';
 import '../../check_ins/data/spot_check_notifications.dart';
 import '../domain/entities/app_settings.dart';
@@ -20,7 +20,7 @@ import 'providers/settings_providers.dart';
 import 'widgets/permission_row.dart';
 import 'widgets/settings_section.dart';
 
-/// Pengaturan — permissions, ARIA's voice, and data controls.
+/// Pengaturan — minimalis, visual, dan intuitif dalam 3 detik pertama.
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -30,7 +30,7 @@ class SettingsPage extends ConsumerWidget {
 
     return AriaScaffold(
       title: 'Pengaturan',
-      subtitle: 'Izin dan preferensi ARIA',
+      subtitle: 'Preferensi & privasi ARIA',
       child: settings.when(
         loading: () => const Padding(
           padding: EdgeInsets.all(AppSpacing.pageGutter),
@@ -53,6 +53,8 @@ class _Content extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.pageGutter,
@@ -61,33 +63,39 @@ class _Content extends ConsumerWidget {
         AppSpacing.huge,
       ),
       children: [
-        // --- Permissions -----------------------------------------------------
-        _PermissionsSection(),
+        // --- 1. Permissions --------------------------------------------------
+        const _PermissionsSection(),
         const SizedBox(height: AppSpacing.xl),
 
-        // --- ARIA's voice ----------------------------------------------------
+        // --- 2. ARIA Companion -----------------------------------------------
         SettingsSection(
-          title: 'ARIA',
+          title: 'Preferensi ARIA',
           children: [
             SettingsRow(
+              leading: const SettingsIcon(
+                icon: Icons.record_voice_over_outlined,
+              ),
               label: 'Nada bicara',
               value: _toneLabel(settings.tone),
-              subtitle: 'Bagaimana ARIA berbicara kepadamu',
               onTap: () => _pickTone(context, ref, settings.tone),
             ),
             SettingsRow(
-              label: 'Target screentime harian',
+              leading: const SettingsIcon(
+                icon: Icons.timer_outlined,
+              ),
+              label: 'Target harian',
               value: settings.dailyTarget.compact,
-              subtitle: 'Garis acuan pada grafik tren',
               onTap: () => _pickTarget(context, ref, settings.dailyTarget),
             ),
             SettingsRow(
+              leading: const SettingsIcon(
+                icon: Icons.bedtime_outlined,
+              ),
               label: 'Jam tenang',
               value: settings.quietHoursEnabled
                   ? '${Duration(minutes: settings.quietHoursFrom.inMinutes).compact}'
                         '–${Duration(minutes: settings.quietHoursUntil.inMinutes).compact}'
-                  : 'Nonaktif',
-              subtitle: 'ARIA tidak mengirim pesan pada jam ini',
+                  : null,
               trailing: Switch.adaptive(
                 value: settings.quietHoursEnabled,
                 onChanged: (value) =>
@@ -95,35 +103,32 @@ class _Content extends ConsumerWidget {
               ),
             ),
             SettingsRow(
-              label: 'AI Penasihat ARIA',
-              subtitle: 'Koneksi model, privasi, dan pesan proaktif',
-              trailing: Icon(
-                Icons.chevron_right_rounded,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              leading: const SettingsIcon(
+                icon: Icons.auto_awesome_outlined,
               ),
+              label: 'AI Penasihat ARIA',
               onTap: () => context.push(Routes.settingsAriaAi),
             ),
             SettingsRow(
-              label: 'Check-in berkala',
-              subtitle: 'Refleksi singkat tentang ritme dan fokusmu',
-              trailing: Icon(
-                Icons.chevron_right_rounded,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              leading: const SettingsIcon(
+                icon: Icons.spa_outlined,
               ),
+              label: 'Refleksi & tes fokus',
               onTap: () => context.push(Routes.spotCheck),
             ),
           ],
         ),
         const SizedBox(height: AppSpacing.xl),
 
-        // --- Feel ------------------------------------------------------------
+        // --- 3. Experience & UI ----------------------------------------------
         SettingsSection(
-          title: 'Rasa & Sentuhan',
-          caption: 'Prinsip interaksi ARIA',
+          title: 'Pengalaman & Tampilan',
           children: [
             SettingsRow(
-              label: 'Getaran halus',
-              subtitle: 'Ketukan ringan saat menekan tombol, seperti menyentuh kertas',
+              leading: const SettingsIcon(
+                icon: Icons.vibration_rounded,
+              ),
+              label: 'Efek getar sentuhan',
               trailing: Switch.adaptive(
                 value: settings.hapticsEnabled,
                 onChanged: (value) =>
@@ -131,8 +136,10 @@ class _Content extends ConsumerWidget {
               ),
             ),
             SettingsRow(
+              leading: const SettingsIcon(
+                icon: Icons.visibility_off_outlined,
+              ),
               label: 'Samarkan nama aplikasi',
-              subtitle: 'Ganti nama app di beranda untuk menjaga privasi',
               trailing: Switch.adaptive(
                 value: settings.maskAppNames,
                 onChanged: (value) => _save(context, ref, maskAppNames: value),
@@ -142,26 +149,45 @@ class _Content extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.xl),
 
-        // --- Data ------------------------------------------------------------
+        // --- 4. Data & Privacy -----------------------------------------------
         SettingsSection(
-          title: 'Data & Privasi',
-          caption: 'Semua data ARIA disimpan di perangkat ini',
+          title: 'Penyimpanan & Data',
           children: [
             SettingsRow(
-              label: 'Hapus semua data',
-              subtitle: 'Menghapus batas, preferensi, dan riwayat lokal',
-              trailing: Icon(
-                Icons.chevron_right_rounded,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              leading: SettingsIcon(
+                icon: Icons.delete_outline_rounded,
+                color: theme.colorScheme.error,
+                backgroundColor: theme.colorScheme.error.withValues(alpha: 0.12),
               ),
+              label: 'Hapus semua data lokal',
+              labelColor: theme.colorScheme.error,
               onTap: () => _confirmClear(context, ref),
             ),
-            const SettingsRow(
-              label: 'Tentang ARIA',
-              value: 'v${AppConfig.version}',
-              subtitle: 'Pendamping digitalmu',
-            ),
           ],
+        ),
+        const SizedBox(height: AppSpacing.xxl),
+
+        // --- Minimalist Footer -----------------------------------------------
+        Center(
+          child: Column(
+            children: [
+              Text(
+                'ARIA v${AppConfig.version}',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Data tersimpan privat di perangkat ini',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.45),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -317,7 +343,9 @@ class _Content extends ConsumerWidget {
           .invokeMethod<void>('cancel');
       await const MethodChannel('com.aria.aria/secure_store')
           .invokeMethod<void>('clearSession');
-      AriaFeedback.success(context, 'Semua data ARIA telah dihapus.');
+      if (context.mounted) {
+        AriaFeedback.success(context, 'Semua data ARIA telah dihapus.');
+      }
     } else {
       AriaFeedback.warning(context, failure.message);
     }
@@ -331,9 +359,10 @@ class _Content extends ConsumerWidget {
   };
 }
 
-/// Permissions block, loaded separately so a slow OS query doesn't hold up the
-/// rest of the screen.
+/// Permissions block, loaded separately so a slow OS query doesn't hold up the screen.
 class _PermissionsSection extends ConsumerStatefulWidget {
+  const _PermissionsSection();
+
   @override
   ConsumerState<_PermissionsSection> createState() =>
       _PermissionsSectionState();
@@ -364,46 +393,39 @@ class _PermissionsSectionState extends ConsumerState<_PermissionsSection>
   Widget build(BuildContext context) {
     final permissions = ref.watch(permissionStatesProvider);
 
-    return SettingsSection(
-      title: 'Izin aplikasi',
-      caption: 'Pilih fitur yang ingin kamu aktifkan. Izin dapat dicabut kapan saja.',
-      children: [
-        permissions.when(
-          loading: () => const Padding(
+    return permissions.when(
+      loading: () => const SettingsSection(
+        title: 'Izin aplikasi',
+        children: [
+          Padding(
             padding: EdgeInsets.all(AppSpacing.lg),
             child: AriaSkeletonLines(lines: 4, lineHeight: 18),
           ),
-          error: (error, _) => Padding(
+        ],
+      ),
+      error: (error, _) => SettingsSection(
+        title: 'Izin aplikasi',
+        children: [
+          Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(
               failureMessage(error),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
-          data: (states) => Column(
-            children: [
-              if (!(states[AppPermission.usageAccess]?.isGranted ?? false))
-                const _PermissionContextCard(),
-              for (var i = 0; i < AppPermission.values.length; i++) ...[
-                if (i > 0)
-                  Divider(
-                    height: 1,
-                    indent: AppSpacing.lg,
-                    endIndent: AppSpacing.lg,
-                    color: Theme.of(context).colorScheme.outlineVariant
-                        .withValues(alpha: 0.4),
-                  ),
-                PermissionRow(
-                  permission: AppPermission.values[i],
-                  state:
-                      states[AppPermission.values[i]] ?? PermissionState.denied,
-                  onRequest: () => _request(context, AppPermission.values[i]),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
+      data: (states) => SettingsSection(
+        title: 'Izin aplikasi',
+        children: [
+          for (final permission in AppPermission.values)
+            PermissionRow(
+              permission: permission,
+              state: states[permission] ?? PermissionState.denied,
+              onRequest: () => _request(context, permission),
+            ),
+        ],
+      ),
     );
   }
 
@@ -417,8 +439,6 @@ class _PermissionsSectionState extends ConsumerState<_PermissionsSection>
 
     result.when(
       ok: (_) {
-        // Re-read the states; on a real device this also needs to re-query when
-        // the app resumes from the system Settings screen.
         ref.invalidate(permissionStatesProvider);
         AriaFeedback.info(context, 'Status izin diperbarui.');
       },
@@ -466,34 +486,4 @@ class _PermissionsSectionState extends ConsumerState<_PermissionsSection>
           ),
         ),
       );
-}
-
-class _PermissionContextCard extends StatelessWidget {
-  const _PermissionContextCard();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    margin: const EdgeInsets.all(AppSpacing.md),
-    padding: const EdgeInsets.all(AppSpacing.md),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.primaryContainer
-          .withValues(alpha: .55),
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(
-          Icons.insights_outlined,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        const Expanded(
-          child: Text(
-            'Beranda masih menunggu data pemakaian. Aktifkan “Akses data pemakaian” untuk melihat screentime dan frekuensi buka aplikasi.',
-          ),
-        ),
-      ],
-    ),
-  );
 }
