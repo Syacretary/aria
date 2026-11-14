@@ -15,9 +15,13 @@ class AriaLlmService {
 
   final SharedPreferences _prefs;
   static const _secureStore = MethodChannel('com.aria.aria/secure_store');
-  static const _supabaseUrl = String.fromEnvironment('ARIA_SUPABASE_URL');
+  static const _supabaseUrl = String.fromEnvironment(
+    'ARIA_SUPABASE_URL',
+    defaultValue: 'https://xqsqtidloywpirlsxzpo.supabase.co',
+  );
   static const _supabaseAnonKey = String.fromEnvironment(
     'ARIA_SUPABASE_ANON_KEY',
+    defaultValue: 'sb_publishable_T_UBBjR75_akPeIgnqNoFQ_kQdSt-ey',
   );
 
   bool get enabled => _prefs.getBool(PrefKeys.ariaAiEnabled) ?? true;
