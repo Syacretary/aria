@@ -192,8 +192,8 @@ class _WelcomeLightCircle extends StatelessWidget {
         colors: [
           Color(0xB3FFFFFF),
           Color(0x99FFD36E),
-          Color(0x55C4B7EE),
-          Color(0x00C4B7EE),
+          Color(0x66F5EBD9),
+          Color(0x00F5EBD9),
         ],
         stops: [0, 0.32, 0.68, 1],
       ),

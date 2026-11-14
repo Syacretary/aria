@@ -127,14 +127,14 @@ class _AriaScaffoldAmbientGlow extends StatelessWidget {
               ? const [
                   Color(0xB3FFFFFF),
                   Color(0x99FFD36E),
-                  Color(0x55C4B7EE),
-                  Color(0x00C4B7EE),
+                  Color(0x66F5EBD9),
+                  Color(0x00F5EBD9),
                 ]
               : const [
                   Color(0x22FFFFFF),
                   Color(0x18FFD36E),
-                  Color(0x15C4B7EE),
-                  Color(0x00C4B7EE),
+                  Color(0x15E8DCBE),
+                  Color(0x00E8DCBE),
                 ],
           stops: const [0, 0.32, 0.68, 1],
         ),

@@ -12,7 +12,8 @@ import '../../domain/entities/daily_summary.dart';
 import '../providers/home_providers.dart';
 
 /// Headline card: video scroll count, screen time, and app opens.
-/// Minimalist, calm, and immediately understandable in under 3 seconds.
+/// Framed with a warm gold-to-cream gradient & deeper contour outline
+/// to stand out as the primary focal point on the home feed.
 class DailySummaryCard extends ConsumerWidget {
   const DailySummaryCard({super.key});
 
@@ -39,116 +40,175 @@ class _Content extends StatelessWidget {
     final colors = context.ariaColors;
     final calmer = data.isCalmerThanYesterday;
 
-    return AriaCard(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header row: Label & Delta
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(AppRadius.xs),
-                ),
-                child: Text(
-                  'HARI INI',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              _DeltaBadge(ratio: data.videoDeltaRatio, lowerIsBetter: true),
-            ],
+    return CustomPaint(
+      foregroundPainter: const _GradientOutlinePainter(
+        radius: AppRadius.shell,
+        strokeWidth: 2.8,
+      ),
+      child: ClipRRect(
+        borderRadius: AppRadius.shellBorder,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFFFD778), // Warm radiant golden amber
+                Color(0xFFFFFFFF), // Crisp center reflection
+                Color(0xFFEFE5CF), // Warm cream / ivory
+              ],
+              stops: [0.0, 0.52, 1.0],
+            ),
           ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Main Metric: Video Scroll Count
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${data.videosOpened}',
-                style: theme.textTheme.displayMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -1.0,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                'scroll video',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Secondary Metrics: Screen Time & Social Opens
-          Row(
-            children: [
-              Expanded(
-                child: _MetricTile(
-                  icon: Icons.access_time_rounded,
-                  label: 'Total layar',
-                  value: data.totalScreenTime.compact,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: _MetricTile(
-                  icon: Icons.touch_app_outlined,
-                  label: 'Buka sosmed',
-                  value: '${data.socialAppOpens}×',
-                ),
-              ),
-            ],
-          ),
-
-          // Calmer acknowledgment badge
-          if (calmer) ...[
-            const SizedBox(height: AppSpacing.md),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.xs + 2,
-              ),
-              decoration: BoxDecoration(
-                color: colors.win.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Row(
+              // Header row: Label & Delta
+              Row(
                 children: [
-                  Icon(
-                    Icons.trending_down_rounded,
-                    size: 16,
-                    color: colors.win,
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  Expanded(
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.75),
+                      borderRadius: BorderRadius.circular(AppRadius.xs),
+                    ),
                     child: Text(
-                      'Lebih tenang dari kemarin. Pertahankan ritmenya.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.win,
-                        fontWeight: FontWeight.w500,
+                      'HARI INI',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
                       ),
+                    ),
+                  ),
+                  const Spacer(),
+                  _DeltaBadge(ratio: data.videoDeltaRatio, lowerIsBetter: true),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
+              // Main Metric: Video Scroll Count
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    '${data.videosOpened}',
+                    style: theme.textTheme.displayMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -1.0,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    'scroll video',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ],
+              const SizedBox(height: AppSpacing.lg),
+
+              // Secondary Metrics: Screen Time & Social Opens
+              Row(
+                children: [
+                  Expanded(
+                    child: _MetricTile(
+                      icon: Icons.access_time_rounded,
+                      label: 'Total layar',
+                      value: data.totalScreenTime.compact,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: _MetricTile(
+                      icon: Icons.touch_app_outlined,
+                      label: 'Buka sosmed',
+                      value: '${data.socialAppOpens}×',
+                    ),
+                  ),
+                ],
+              ),
+
+              // Calmer acknowledgment badge
+              if (calmer) ...[
+                const SizedBox(height: AppSpacing.md),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.xs + 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.win.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.trending_down_rounded,
+                        size: 16,
+                        color: colors.win,
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(
+                        child: Text(
+                          'Lebih tenang dari kemarin. Pertahankan ritmenya.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.win,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
+}
+
+/// Outline painter with deeper golden-bronze gradient for high contrast focus.
+class _GradientOutlinePainter extends CustomPainter {
+  const _GradientOutlinePainter({
+    required this.radius,
+    required this.strokeWidth,
+  });
+
+  final double radius;
+  final double strokeWidth;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color(0xFFD8A638), // Darker golden amber
+          Color(0xFF9A783E), // Deep warm bronze / sage
+        ],
+      ).createShader(rect);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        rect.deflate(strokeWidth / 2),
+        Radius.circular(radius),
+      ),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_GradientOutlinePainter oldDelegate) =>
+      radius != oldDelegate.radius || strokeWidth != oldDelegate.strokeWidth;
 }
 
 class _MetricTile extends StatelessWidget {
@@ -172,8 +232,12 @@ class _MetricTile extends StatelessWidget {
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
+        color: Colors.white.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.9),
+          width: 0.8,
+        ),
       ),
       child: Row(
         children: [
@@ -226,7 +290,7 @@ class _DeltaBadge extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHigh,
+          color: Colors.white.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(999),
         ),
         child: Text(
@@ -245,8 +309,12 @@ class _DeltaBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: color.withValues(alpha: 0.3),
+          width: 0.8,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
